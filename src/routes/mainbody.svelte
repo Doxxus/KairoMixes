@@ -1,4 +1,5 @@
 <script lang="ts">
+
     export let mix_data: any;
 
     function play(mix_id: number, num_mixes: number) {      
@@ -32,6 +33,7 @@
 
         //button.classList.toggle('playing');
     }
+
 </script>
 <main class="inner_layout">
     {#each mix_data as mix}
@@ -140,9 +142,9 @@
             animation: spin 5s linear infinite;
         }
 
-        &--reverse::before {
-            animation-direction: reverse;
-        }
+        // &--reverse::before {
+        //     animation-direction: reverse;
+        // }
 
         &::after {
             content: '';
@@ -184,9 +186,9 @@
             animation: spin 5s linear infinite;
         }
 
-        &--reverse::before {
-            animation-direction: reverse;
-        }
+        // &--reverse::before {
+        //     animation-direction: reverse;
+        // }
 
         &::after {
             content: '';

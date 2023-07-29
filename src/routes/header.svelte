@@ -21,9 +21,9 @@
         margin-bottom: 3px;
     }
 
-    a:hover {
+    /* a:hover {
         font-weight: 700;
         font-size: 20px;
         border-bottom: 1px solid black;
-    }
+    } */
 </style>
