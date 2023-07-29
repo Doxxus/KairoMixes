@@ -49,19 +49,21 @@
         grid-column: 2/3;
         grid-row: 2/2;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        grid-template-rows: repeat(auto-fit, minmax(500px, 1fr));
         padding: 8px;
-        gap: 5px;
+        gap: 0.5em;
     }
 
     .container {
         position: relative;
         transition: 0.3s;
+        max-width: 750px;
     }
 
     .image {
         size: 100%;
+        overflow: hidden;
         position: relative;
     }
 
