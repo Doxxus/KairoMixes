@@ -1,13 +1,13 @@
 <script lang="ts">
-
-    export let mix_data: any;
+    import { type mix } from "../objects/mix";
+    export let mix_data: mix[];
 
     function play(mix_id: number, num_mixes: number) {      
         
         for (let i = 0; i < num_mixes; i++) {
             if (i === mix_id - 1) continue;
             
-            mix_data[i][1] = false;
+            mix_data[i].playing = false;
 
             //let button: HTMLButtonElement = document.getElementById("b"+(i+1).toString()) as HTMLButtonElement;
             let audioplayer: HTMLAudioElement = document.getElementById((i + 1).toString()) as HTMLAudioElement;
@@ -19,15 +19,15 @@
             // }           
         }
         
-        mix_data[mix_id - 1][1] = !mix_data[mix_id - 1][1];
+        mix_data[mix_id - 1].playing = !mix_data[mix_id - 1].playing;
         
         //let button: HTMLButtonElement = document.getElementById("b"+mix_id.toString()) as HTMLButtonElement;
         let audioplayer: HTMLAudioElement = document.getElementById(mix_id.toString()) as HTMLAudioElement;
 
-        if (mix_data[mix_id - 1][1] === true) {        
+        if (mix_data[mix_id - 1].playing === true) {        
             audioplayer.play();
         }
-        else if (mix_data[mix_id - 1][1] === false) {
+        else if (mix_data[mix_id - 1].playing === false) {
             audioplayer.pause();           
         }
 
@@ -37,10 +37,10 @@
 </script>
 <main class="inner_layout">
     {#each mix_data as mix}
-        <button class="container" class:playing={mix[1]} id="b{mix[0]}" on:click="{() => {play(mix[0], mix_data.length);}}">
-            <div class="title">{mix[4]}</div>
-            <img class ="image" src={mix[2]} alt="">
-            <audio class="player" id={mix[0]} src={mix[3]} controls loop></audio>
+        <button class="container" class:playing={mix.playing} id="b{mix.id}" on:click="{() => {play(mix.id, mix_data.length);}}">
+            <div class="title">{mix.name.toUpperCase()}</div>
+            <img class ="image" src={mix.cover_path} alt="">
+            <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls loop></audio>
         </button>
     {/each}
 </main>

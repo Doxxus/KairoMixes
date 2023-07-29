@@ -1,0 +1,9 @@
+{
+    "mixes": [
+        {"id": 1, "name": "Recalcitrant", "playing": false, "cover_path": "/Covers/recalcitrant.jpg", "audio_file_path": "/Mixes/Recalcitrant.mp3"},
+        {"id": 2, "name": "Overtime", "playing": false, "cover_path": "/Covers/overtime.jpg", "audio_file_path": "/Mixes/Overtime.mp3"},
+        {"id": 3, "name": "Outer Realms", "playing": false, "cover_path": "/Covers/outer_realms.jpg", "audio_file_path": "/Mixes/Outer_Realms.mp3"},
+        {"id": 4, "name": "Trial", "playing": false, "cover_path": "/Covers/trial.jpg", "audio_file_path": "/Mixes/Trial.mp3"},
+        {"id": 5, "name": "Firebomb", "playing": false, "cover_path": "/Covers/firebomb.jpg", "audio_file_path": "/Mixes/Firebomb.mp3"}
+    ]
+}
