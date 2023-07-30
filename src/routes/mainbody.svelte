@@ -1,49 +1,127 @@
 <script lang="ts">
-    import { type mix } from "../objects/mix";
-    export let mix_data: mix[];
+    import { onMount } from 'svelte';
+    import { type Mix } from '../objects/mix';
+    import { type Tracklist } from '../objects/tracklist';
+    import { type Track } from '../objects/track';
+	import TracklistModal from '../routes/tracklist_modal.svelte';
+    
+    export let mix_data: Mix[];
+    export let tracklists: Tracklist[];
 
-    function play(mix_id: number, num_mixes: number) {      
-        
+    let inactive: boolean = false;
+    let show_tracklist = false;
+    let playing_tracks: Track[][] = [];
+
+    for (let i = 0; i < mix_data.length; i++) {
+        playing_tracks[i] = [];
+    }
+
+    let current_tracklist: Tracklist = tracklists[0];
+
+    function play(trigger_mix: Mix, num_mixes: number) {      
+        if (inactive) return;
+
         for (let i = 0; i < num_mixes; i++) {
-            if (i === mix_id - 1) continue;
+            if (i === trigger_mix.id - 1) continue;
             
             mix_data[i].playing = false;
-
-            //let button: HTMLButtonElement = document.getElementById("b"+(i+1).toString()) as HTMLButtonElement;
             let audioplayer: HTMLAudioElement = document.getElementById((i + 1).toString()) as HTMLAudioElement;
-
             audioplayer.pause();
-
-            // if (button.classList.contains('playing')) {
-            //     button.classList.remove('playing');
-            // }           
         }
         
-        mix_data[mix_id - 1].playing = !mix_data[mix_id - 1].playing;
-        
-        //let button: HTMLButtonElement = document.getElementById("b"+mix_id.toString()) as HTMLButtonElement;
-        let audioplayer: HTMLAudioElement = document.getElementById(mix_id.toString()) as HTMLAudioElement;
+        trigger_mix.playing = !trigger_mix.playing;
+        let audioplayer: HTMLAudioElement = document.getElementById(trigger_mix.id.toString()) as HTMLAudioElement;
 
-        if (mix_data[mix_id - 1].playing === true) {        
+        if (trigger_mix.playing === true) {        
             audioplayer.play();
+            UpdatePlayingTracks()
         }
-        else if (mix_data[mix_id - 1].playing === false) {
+        else if (trigger_mix.playing === false) {
             audioplayer.pause();           
         }
+    }
 
-        //button.classList.toggle('playing');
+    function OpenTracklist(mix_id: number) {
+        inactive = true;
+        setTimeout(() => {
+            inactive = false;
+        }, 20);
+
+        if (tracklists.length < mix_id) return;
+
+        current_tracklist = tracklists[mix_id - 1];
+        show_tracklist = true;
+    }
+
+    function UpdatePlayingTracks() {
+        let audioplayer: HTMLAudioElement = document.getElementById(mix_data[0].id.toString()) as HTMLAudioElement;
+        let tracklist_id: number = mix_data[0].id;
+
+        for (let i = 0; i < mix_data.length; i++) {
+            if (!mix_data[i].playing) continue;
+            audioplayer = document.getElementById(mix_data[i].id.toString()) as HTMLAudioElement;
+            tracklist_id = mix_data[i].id;
+            break;
+        }
+
+        let last_track: any;
+
+        playing_tracks[tracklist_id - 1] = [];
+
+        tracklists[tracklist_id - 1].tracks.forEach((track) => {
+            if (track.start_time < audioplayer.currentTime && track.end_time > audioplayer.currentTime) {
+                playing_tracks[tracklist_id - 1] = [...playing_tracks[tracklist_id - 1], track];
+            }
+        }); 
+    }
+
+    onMount(() => {
+        setInterval(UpdatePlayingTracks, 200);
+    });
+
+    function GetTimeFromSeconds(sec_value: number) : string {
+        let ret: string = "";
+        let minutes: number = Math.floor(sec_value / 60);     
+        let seconds: number = sec_value % 60;
+
+        ret += minutes.toString() + ':';
+        if (seconds < 10) ret += '0';
+        ret += seconds.toString();
+        
+        return ret;
     }
 
 </script>
+
 <main class="inner_layout">
     {#each mix_data as mix}
-        <button class="container" class:playing={mix.playing} id="b{mix.id}" on:click="{() => {play(mix.id, mix_data.length);}}">
+        <button class="container" class:playing={mix.playing} id="b{mix.id}" on:click="{() => {play(mix, mix_data.length);}}">
             <div class="title">{mix.name.toUpperCase()}</div>
-            <img class ="image" src={mix.cover_path} alt="">
+            <img class="image" src={mix.cover_path} alt="">
+            <ul class="playing_track_list" id="playing_tracks{mix.id}">
+                <li class="playing_track">Current Tracks</li>
+                {#each playing_tracks[mix.id - 1] as track}
+                    <li class="playing_track">{track.artist} - {track.title}</li>
+                {/each}
+            </ul>
             <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls loop></audio>
+            <button class="tracklist_btn" id="{mix.name}_tracklist" on:click="{() => {OpenTracklist(mix.id)}}">TRACKLIST</button>
         </button>
     {/each}
+    <TracklistModal bind:show_tracklist>
+        <h2 slot="header">
+            {current_tracklist.name.toUpperCase()}
+        </h2>
+        <ol class="scrollable_list" slot="track_content">
+            {#each current_tracklist.tracks as track}
+                <li>
+                    [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}]. {track.artist} - {track.title}
+                </li>
+            {/each}
+        </ol>
+    </TracklistModal>
 </main>
+
 <style lang="scss">
     .inner_layout {
         grid-column: 2/3;
@@ -65,6 +143,7 @@
         size: 100%;
         overflow: hidden;
         position: relative;
+        z-index: 0;
     }
 
     .title {
@@ -114,7 +193,22 @@
         to   {transform: translate(-50%, -50%) rotate(360deg);}
     }
 
-    button:hover {
+    .tracklist_btn {
+        position: absolute;
+        font-size: 20px;
+        font-family: Helvetica;
+        text-shadow: 2px 2px #DAD5EA;
+        letter-spacing: 5px;
+        z-index: 30;
+        background: transparent;       
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 5px;
+        bottom: 15px;
+        right: 15px;
+    }
+
+    .container:hover {
         overflow: hidden;
         
         --border-radius: 0.5rem;
@@ -128,6 +222,7 @@
         padding: calc(var(--padding) + var(--border-size));
         border-radius: var(--border-radius);
         display: inline-block;
+        z-index: 0;
         
         &::before {
             content: '';
@@ -200,5 +295,45 @@
             z-index: -1;
             border-radius: calc(var(--border-radius) - var(--border-size));
         }
+    }
+
+    .scrollable_list {
+        @apply dark:text-translucent-violet text-dark-violet;
+
+        padding: 10px;
+        overflow: hidden;
+        overflow-y: scroll;
+        max-height: 70vh;
+    }
+
+    h2 {
+        @apply dark:text-translucent-violet text-dark-violet;
+
+        font-size: 20px;
+        font-family: Helvetica;
+        letter-spacing: 3px;
+    }
+
+    .playing_track_list {
+        z-index: 30;
+        position: absolute;      
+        z-index: 30;
+        background: transparent;                  
+        top: 40%;
+        width: 70%;
+        left: 15%;
+        text-align: center;
+    }
+
+    .playing_track {
+        font-size: 15px;
+        font-family: Helvetica;
+        text-shadow: 2px 2px #DAD5EA;
+        letter-spacing: 5px;
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        text-align: center;
+        width: 100%;
+        margin: 2px;
     }
 </style>

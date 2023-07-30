@@ -1,4 +1,4 @@
-export type mix = {
+export type Mix = {
     id: number;
     name: string;
     playing: boolean;

@@ -1,6 +1,7 @@
 <script>
 
 </script>
+
 <main class="header_layout">
     <div>
         <h1 class="text-5xl mt-2 dark:text-translucent-violet text-muddy-violet">Kairo Mixes</h1>
@@ -9,6 +10,7 @@
         <!--<a class="self-center dark:text-translucent-violet text-muddy-violet" href="/">Newest Mix</a>-->
     </div>
 </main>
+
 <style>
     .header_layout {
         grid-column: 2/3;
