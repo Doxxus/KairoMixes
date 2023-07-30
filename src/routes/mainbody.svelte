@@ -133,12 +133,13 @@
 
 <style lang="scss">
     .inner_layout {
-        grid-column: 2/3;
+        grid-column: 1/3;
         grid-row: 2/2;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-        grid-template-rows: repeat(auto-fit, minmax(500px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        grid-template-rows: repeat(auto-fit, minmax(350px, 1fr));
         padding: 8px;
+        margin: 20px;
         gap: 0.5em;
     }
 
@@ -158,7 +159,7 @@
     .title {
         @apply text-dark-violet;
         position: absolute;
-        font-size: 35px;
+        font-size: 1.5em;
         font-family: Helvetica;
         text-shadow: 2px 2px #DAD5EA;
         letter-spacing: 5px;
@@ -222,7 +223,7 @@
         overflow: hidden;
 
         --border-radius: 0.2rem;
-        --border-size: 0.2rem;
+        --border-size: 0.1rem;
         --border-bg: conic-gradient(#DAD5EA, #0f041a, #DAD5EA, #0f041a, #DAD5EA);
         --padding: 0rem;
 
@@ -264,13 +265,12 @@
         overflow: hidden;
 
         --border-radius: 0.5rem;
-        --border-size: 0.5rem;
+        --border-size: 0.3rem;
         --border-bg: conic-gradient(#DAD5EA, #0f041a, #DAD5EA, #0f041a, #DAD5EA);
         --padding: 0rem;
 
         position: relative;
         overflow: hidden;
-        font-size: 2rem;
         padding: calc(var(--padding) + var(--border-size));
         border-radius: var(--border-radius);
         display: inline-block;
@@ -309,13 +309,12 @@
         overflow: hidden;
 
         --border-radius: 0.2rem;
-        --border-size: 0.2rem;
+        --border-size: 0.1rem;
         --border-bg: conic-gradient(#DAD5EA, #0f041a, #DAD5EA, #0f041a, #DAD5EA);
         --padding: 0rem;
 
         position: relative;
         overflow: hidden;
-        font-size: 2rem;
         padding: calc(var(--padding) + var(--border-size));
         border-radius: var(--border-radius);
         display: inline-block;
@@ -379,7 +378,7 @@
     }
 
     .playing_track {
-        font-size: 15px;
+        font-size: .8em;
         font-family: Helvetica;
         text-shadow: 2px 2px #DAD5EA;
         letter-spacing: 5px;
