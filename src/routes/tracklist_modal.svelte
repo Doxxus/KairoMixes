@@ -4,13 +4,26 @@
 	let dialog: HTMLDialogElement; // HTMLDialogElement
 
 	$: if (dialog && show_tracklist) dialog.showModal();
+
+	let hide_dialog: boolean;
+
+	function CloseDialog() {
+		hide_dialog = true;
+		
+		setTimeout(() => {
+			dialog.close();
+			hide_dialog = false;
+		}, 300);
+	}
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <dialog
 	bind:this={dialog}
 	on:close={() => (show_tracklist = false)}
-	on:click|self={() => dialog.close()}
+	on:click|self={() => CloseDialog()}
+
+	class:hide={hide_dialog}
 >
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div on:click|stopPropagation>
@@ -19,7 +32,7 @@
 		<slot name="track_content"/>
 		<hr />
 		<!-- svelte-ignore a11y-autofocus -->
-		<button autofocus on:click={() => dialog.close()}>Close</button>
+		<button autofocus on:click={() => CloseDialog()}>Close</button>
 	</div>
 </dialog>
 
@@ -43,29 +56,60 @@
 		padding: 1em;
 	}
 
+
 	dialog[open] {
-		animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+		animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 
-	@keyframes zoom {
+	dialog.hide {
+		animation: zoomOut 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+	}
+
+	@keyframes zoomIn {
 		from {
-			transform: scale(0.95);
+			opacity: 0;
+			transform: scale(0.85);
 		}
 		to {
+			opacity: 1;
 			transform: scale(1);
 		}
 	}
 
-	dialog[open]::backdrop {
-		animation: fade 0.2s ease-out;
+	@keyframes zoomOut {
+		from {
+			opacity: 1;
+			transform: scale(1);
+		}
+		to {
+			opacity: 0;
+			transform: scale(0.85);
+		}
 	}
 
-	@keyframes fade {
+	dialog[open]::backdrop {
+		animation: fadeIn 0.3s ease-out;
+	}
+
+	dialog.hide::backdrop {
+		animation: fadeOut 0.3s ease-out;
+	}
+
+	@keyframes fadeIn {
 		from {
 			opacity: 0;
 		}
 		to {
 			opacity: 1;
+		}
+	}
+
+	@keyframes fadeOut {
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
 		}
 	}
 

@@ -8,7 +8,7 @@ const config = {
 				'muddy-violet': '#302D3E',
 				'dark-violet': '#0f041a',
 				'translucent-violet': '#DAD5EA',
-			},
+			}
 		},
 	},
 
