@@ -297,6 +297,50 @@
         audio::-webkit-media-controls-enclosure:hover {
             background-color: rgba(218, 213, 234, 0.2);
         }
+
+        .container:hover {
+            overflow: hidden;
+
+            --border-radius: 0.5rem;
+            --border-size: 0.3rem;
+            --border-bg: conic-gradient(#DAD5EA, #0f041a, #DAD5EA, #0f041a, #DAD5EA);
+            --padding: 0rem;
+
+            position: relative;
+            overflow: hidden;
+            padding: calc(var(--padding) + var(--border-size));
+            border-radius: var(--border-radius);
+            display: inline-block;
+            z-index: 0;
+
+            &::before {
+                content: '';
+                display: block;
+                background: var(--border-bg);
+                width: calc(100% * 1.41421356237);
+                padding-bottom: calc(100% * 1.41421356237);
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                border-radius: 100%;
+                z-index: -2;
+                animation: spin 5s linear infinite;
+            }
+
+            // &--reverse::before {
+            //     animation-direction: reverse;
+            // }
+
+            &::after {
+                content: '';
+                position: absolute;
+                inset: var(--border-size);
+                background: white;
+                z-index: -1;
+                border-radius: calc(var(--border-radius) - var(--border-size));
+            }
+        }
     }    
 
     .container {
@@ -379,50 +423,6 @@
             position: absolute;
             inset: var(--border-size);
             @apply dark:bg-dark-violet bg-translucent-violet;
-            z-index: -1;
-            border-radius: calc(var(--border-radius) - var(--border-size));
-        }
-    }
-
-    .container:hover {
-        overflow: hidden;
-
-        --border-radius: 0.5rem;
-        --border-size: 0.3rem;
-        --border-bg: conic-gradient(#DAD5EA, #0f041a, #DAD5EA, #0f041a, #DAD5EA);
-        --padding: 0rem;
-
-        position: relative;
-        overflow: hidden;
-        padding: calc(var(--padding) + var(--border-size));
-        border-radius: var(--border-radius);
-        display: inline-block;
-        z-index: 0;
-
-        &::before {
-            content: '';
-            display: block;
-            background: var(--border-bg);
-            width: calc(100% * 1.41421356237);
-            padding-bottom: calc(100% * 1.41421356237);
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 100%;
-            z-index: -2;
-            animation: spin 5s linear infinite;
-        }
-
-        // &--reverse::before {
-        //     animation-direction: reverse;
-        // }
-
-        &::after {
-            content: '';
-            position: absolute;
-            inset: var(--border-size);
-            background: white;
             z-index: -1;
             border-radius: calc(var(--border-radius) - var(--border-size));
         }
