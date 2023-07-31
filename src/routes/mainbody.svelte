@@ -7,6 +7,7 @@
     import { type Tracklist } from '../objects/tracklist';
     import { type Track } from '../objects/track';
 
+    import { repeat_mix } from '../objects/stores';
 	import TracklistModal from '../routes/tracklist_modal.svelte';
 
     export let mix_data: Mix[];
@@ -98,12 +99,28 @@
         return ret;
     }
 
+    function OnTrackEnd(trigger_mix: Mix) {       
+        let audioplayer: HTMLAudioElement;
+        
+        if ($repeat_mix) {
+            audioplayer = document.getElementById(trigger_mix.id.toString()) as HTMLAudioElement;
+        }     
+        else if (trigger_mix.id == mix_data.length) {
+            audioplayer = document.getElementById(mix_data[0].id.toString()) as HTMLAudioElement;
+        }
+        else {
+            audioplayer = document.getElementById((trigger_mix.id + 1).toString()) as HTMLAudioElement;
+        }
+
+        audioplayer.play();
+    }
+
 </script>
 
 <main class="inner_layout">
     {#each mix_data as mix}
         <button class="container" class:playing={mix.playing} id="b{mix.id}" on:click="{() => {play(mix, mix_data.length);}}">
-            <div class="title">{mix.name.toUpperCase()}</div>
+            <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
             <img class="image" src={mix.cover_path} alt="">           
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
                 {#if mix.playing}
@@ -113,7 +130,7 @@
                     {/each}
                 {/if}
             </ul>          
-            <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls loop on:play="{() => {PlayRequested(mix)}}" on:pause="{() => {PauseRequested(mix)}}"></audio>
+            <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls on:play="{() => {PlayRequested(mix)}}" on:pause="{() => {PauseRequested(mix)}}" on:ended={() => {OnTrackEnd(mix)}}></audio>
             <button class="tracklist_btn" id="{mix.name}_tracklist" on:click|stopPropagation="{() => {OpenTracklist(mix.id)}}">TRACKLIST</button>
         </button>
     {/each}
