@@ -152,8 +152,8 @@
             text-shadow: 2px 2px #DAD5EA;
             letter-spacing: 5px;
             top: 15%;
-            left: 15%;
-            width: 70%;
+            left: 5%;
+            width: 90%;
             height: 10%;
             background: transparent;
             opacity: 1;
@@ -170,8 +170,8 @@
             z-index: 30;
             background: transparent;
             top: 30%;
-            width: 70%;
-            left: 15%;
+            width: 80%;
+            left: 10%;
             text-align: center;
             opacity: 1;
         }
@@ -200,6 +200,15 @@
             text-align: center;
             width: 100%;
             margin: 2px;
+        }
+
+        .player {
+            position: absolute;
+            z-index: 10;
+            width: 90%;
+            height: 10%;
+            top: 70%;
+            left: 5%;
         }
 
         audio::-webkit-media-controls-enclosure {
@@ -234,8 +243,8 @@
             text-shadow: 2px 2px #DAD5EA;
             letter-spacing: 5px;
             top: 15%;
-            left: 15%;
-            width: 70%;
+            left: 12%;
+            width: 76%;
             height: 10%;
             background: transparent;
             opacity: 1;
@@ -281,6 +290,15 @@
             text-align: center;
             width: 100%;
             margin: 2px;
+        }
+        
+        .player {
+            position: absolute;
+            z-index: 10;
+            width: 76%;
+            height: 10%;
+            top: 70%;
+            left: 12%;
         }
 
         audio::-webkit-media-controls-enclosure {
@@ -354,15 +372,6 @@
         overflow: hidden;
         position: relative;
         z-index: 0;
-    }
-
-    .player {
-        position: absolute;
-        z-index: 10;
-        width: 70%;
-        height: 10%;
-        top: 70%;
-        left: 15%;
     }
 
     @keyframes spin {
