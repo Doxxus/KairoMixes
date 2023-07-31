@@ -83,7 +83,7 @@
     }
 
     onMount(() => {
-        setInterval(UpdatePlayingTracks, 250);
+        setInterval(UpdatePlayingTracks, 500);
     });
 
     function GetTimeFromSeconds(sec_value: number) : string {
@@ -107,7 +107,7 @@
             <img class="image" src={mix.cover_path} alt="">           
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
                 {#if mix.playing}
-                    <li class="playing_track" transition:fade>Current Tracks</li>
+                    <li class="current_track_item" transition:fade>Current Tracks</li>
                     {#each playing_tracks[mix.id - 1] as track (track.id)}
                         <li in:fly={{x: 50}} out:fly={{x: -50}} animate:flip class="playing_track" id="track{track.id}">{track.artist} - {track.title}</li>
                     {/each}
@@ -132,16 +132,172 @@
 </main>
 
 <style lang="scss">
-    .inner_layout {
-        grid-column: 1/3;
-        grid-row: 2/2;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        grid-template-rows: repeat(auto-fit, minmax(350px, 1fr));
-        padding: 8px;
-        margin: 20px;
-        gap: 0.5em;
+    @media (max-width: 1000px) {
+        .inner_layout {
+            grid-column: 1/3;
+            grid-row: 2/2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-rows: repeat(auto-fit, minmax(350px, 1fr));
+            padding: 8px;
+            margin: 20px;
+            gap: 0.5em;
+        }
+
+        .title {
+            @apply text-dark-violet;
+            position: absolute;
+            font-size: 1.5em;
+            font-family: Helvetica;
+            text-shadow: 2px 2px #DAD5EA;
+            letter-spacing: 5px;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 10%;
+            background: transparent;
+            opacity: 1;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            text-align: center;
+            z-index: 20;
+        }
+
+        .playing_track_list {
+            z-index: 30;
+            position: absolute;
+            z-index: 30;
+            background: transparent;
+            top: 30%;
+            width: 70%;
+            left: 15%;
+            text-align: center;
+            opacity: 1;
+        }
+
+        .current_track_item {
+            font-size: 1em;
+            font-family: Helvetica;
+            text-shadow: 2px 2px #DAD5EA;
+            background-color: rgba(218, 213, 234, 0);
+            letter-spacing: 5px;
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            margin: 2px;
+        }
+
+        .playing_track {
+            font-size: .75em;
+            font-family: Helvetica;
+            background-color: rgba(218, 213, 234, 0.2);
+            stroke-width: 10px;
+            letter-spacing: 2px;
+            backdrop-filter: blur(10px);
+            border-radius: 5px;
+            text-align: center;
+            width: 100%;
+            margin: 2px;
+        }
+
+        audio::-webkit-media-controls-enclosure {
+            @apply stroke-dark-violet;
+
+            stroke-width: 5px;
+            stroke-opacity: 1;
+            background-color: rgba(218, 213, 234, 0.2);
+            opacity: 1;
+            backdrop-filter: blur(10px);
+            transition: 0.2s linear;
+        }
     }
+
+    @media (min-width: 1000px) {
+        .inner_layout {
+            grid-column: 1/3;
+            grid-row: 2/2;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-rows: repeat(auto-fit, minmax(500px, 1fr));
+            padding: 8px;
+            margin: 20px;
+            gap: 0.5em;
+        }
+
+        .title {
+            @apply text-dark-violet;
+            position: absolute;
+            font-size: 2.2em;
+            font-family: Helvetica;
+            text-shadow: 2px 2px #DAD5EA;
+            letter-spacing: 5px;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 10%;
+            background: transparent;
+            opacity: 1;
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            text-align: center;
+            z-index: 20;
+        }
+
+        .playing_track_list {
+            z-index: 30;
+            position: absolute;
+            z-index: 30;
+            background: transparent;
+            top: 35%;
+            width: 70%;
+            left: 15%;
+            text-align: center;
+            opacity: 1;
+        }
+
+        .current_track_item {
+            font-size: 1.5em;
+            font-family: Helvetica;
+            text-shadow: 2px 2px #DAD5EA;
+            background-color: rgba(218, 213, 234, 0.1);
+            letter-spacing: 5px;
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            margin: 2px;
+        }
+
+        .playing_track {
+            font-size: 1em;
+            font-family: Helvetica;
+            text-shadow: 2px 2px #DAD5EA;
+            letter-spacing: 5px;
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            margin: 2px;
+        }
+
+        audio::-webkit-media-controls-enclosure {
+            @apply stroke-dark-violet;
+
+            stroke-width: 5px;
+            stroke-opacity: 1;
+            background-color: rgba(218, 213, 234, 0);
+            opacity: 1;
+            backdrop-filter: blur(10px);
+            transition: 0.2s linear;
+        }
+
+        audio::-webkit-media-controls-enclosure:hover {
+            background-color: rgba(218, 213, 234, 0.2);
+        }
+    }    
 
     .container {
         position: relative;
@@ -156,44 +312,11 @@
         z-index: 0;
     }
 
-    .title {
-        @apply text-dark-violet;
-        position: absolute;
-        font-size: 1.5em;
-        font-family: Helvetica;
-        text-shadow: 2px 2px #DAD5EA;
-        letter-spacing: 5px;
-        top: 15%;
-        left: 15%;
-        width: 70%;
-        height: 10%;
-        background: transparent;
-        opacity: 1;
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        overflow: hidden;
-        text-align: center;
-        z-index: 20;
-    }
-
-    audio::-webkit-media-controls-play-button {
-        color: white;
-    }
-
-    audio::-webkit-media-controls-enclosure {
-        @apply stroke-dark-violet;
-
-        stroke-width: 5px;
-        stroke-opacity: 1;
-        background: transparent;
-        opacity: 1;
-        backdrop-filter: blur(10px);
-    }
-
     .player {
         position: absolute;
         z-index: 10;
         width: 70%;
+        height: 10%;
         top: 70%;
         left: 15%;
     }
@@ -363,30 +486,6 @@
         font-size: 20px;
         font-family: Helvetica;
         letter-spacing: 3px;
-    }
-
-    .playing_track_list {
-        z-index: 30;
-        position: absolute;
-        z-index: 30;
-        background: transparent;
-        top: 40%;
-        width: 70%;
-        left: 15%;
-        text-align: center;
-        opacity: 1;
-    }
-
-    .playing_track {
-        font-size: .8em;
-        font-family: Helvetica;
-        text-shadow: 2px 2px #DAD5EA;
-        letter-spacing: 5px;
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        text-align: center;
-        width: 100%;
-        margin: 2px;
     }
 
     @keyframes fadeOut {
