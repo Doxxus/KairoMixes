@@ -5,9 +5,9 @@
     import { fade, fly } from 'svelte/transition';
     import { flip } from 'svelte/animate';
 
-    import { type Mix } from '../objects/mix';
-    import { type Tracklist } from '../objects/tracklist';
-    import { type Track } from '../objects/track';
+    import type { Mix } from '../objects/mix';
+    import type { Tracklist } from '../objects/tracklist';
+    import type { Track } from '../objects/track';
 
     import { repeat_mix } from '../objects/stores';
 	import TracklistModal from '../routes/tracklist_modal.svelte';
