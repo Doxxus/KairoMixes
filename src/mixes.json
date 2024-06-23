@@ -1,14 +1,15 @@
 {
     "mixes": [
-        {"id": 1, "name": "Scintillation", "playing": false, "cover_path": "/Covers/scintillation.jpg", "audio_file_path": "/Mixes/Scintillation.mp3"},
-        {"id": 2, "name": "Effulgence", "playing": false, "cover_path": "/Covers/effulgence.jpg", "audio_file_path": "/Mixes/Effulgence.mp3"},
-        {"id": 3, "name": "Neurogenesis", "playing": false, "cover_path": "/Covers/neurogenesis.jpg", "audio_file_path": "/Mixes/Neurogenesis.mp3"},
-        {"id": 4, "name": "Labyrinth", "playing": false, "cover_path": "/Covers/labyrinth.jpg", "audio_file_path": "/Mixes/Labyrinth.mp3"},
-        {"id": 5, "name": "Recalcitrant", "playing": false, "cover_path": "/Covers/recalcitrant.jpg", "audio_file_path": "/Mixes/Recalcitrant.mp3"},
-        {"id": 6, "name": "Overtime", "playing": false, "cover_path": "/Covers/overtime.jpg", "audio_file_path": "/Mixes/Overtime.mp3"},
-        {"id": 7, "name": "Outer Realms", "playing": false, "cover_path": "/Covers/outer_realms.jpg", "audio_file_path": "/Mixes/Outer_Realms.mp3"},
-        {"id": 8, "name": "Trial", "playing": false, "cover_path": "/Covers/trial.jpg", "audio_file_path": "/Mixes/Trial.mp3"},
-        {"id": 9, "name": "Firebomb", "playing": false, "cover_path": "/Covers/firebomb.jpg", "audio_file_path": "/Mixes/Firebomb.mp3"},
-        {"id": 10, "name": "Manifest", "playing": false, "cover_path": "/Covers/manifest.jpg", "audio_file_path": "/Mixes/Manifest.mp3"}
+        {"id": 1, "name": "Apricity", "playing": false, "cover_path": "/Covers/apricity.jpg", "audio_file_path": "/Mixes/Apricity.mp3"},
+        {"id": 2, "name": "Scintillation", "playing": false, "cover_path": "/Covers/scintillation.jpg", "audio_file_path": "/Mixes/Scintillation.mp3"},
+        {"id": 3, "name": "Effulgence", "playing": false, "cover_path": "/Covers/effulgence.jpg", "audio_file_path": "/Mixes/Effulgence.mp3"},
+        {"id": 4, "name": "Neurogenesis", "playing": false, "cover_path": "/Covers/neurogenesis.jpg", "audio_file_path": "/Mixes/Neurogenesis.mp3"},
+        {"id": 5, "name": "Labyrinth", "playing": false, "cover_path": "/Covers/labyrinth.jpg", "audio_file_path": "/Mixes/Labyrinth.mp3"},
+        {"id": 6, "name": "Recalcitrant", "playing": false, "cover_path": "/Covers/recalcitrant.jpg", "audio_file_path": "/Mixes/Recalcitrant.mp3"},
+        {"id": 7, "name": "Overtime", "playing": false, "cover_path": "/Covers/overtime.jpg", "audio_file_path": "/Mixes/Overtime.mp3"},
+        {"id": 8, "name": "Outer Realms", "playing": false, "cover_path": "/Covers/outer_realms.jpg", "audio_file_path": "/Mixes/Outer_Realms.mp3"},
+        {"id": 9, "name": "Trial", "playing": false, "cover_path": "/Covers/trial.jpg", "audio_file_path": "/Mixes/Trial.mp3"},
+        {"id": 10, "name": "Firebomb", "playing": false, "cover_path": "/Covers/firebomb.jpg", "audio_file_path": "/Mixes/Firebomb.mp3"},
+        {"id": 11, "name": "Manifest", "playing": false, "cover_path": "/Covers/manifest.jpg", "audio_file_path": "/Mixes/Manifest.mp3"}
     ]
 }
