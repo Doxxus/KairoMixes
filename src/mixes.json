@@ -10,6 +10,7 @@
         {"id": 8, "name": "Outer Realms", "playing": false, "cover_path": "/Covers/outer_realms.jpg", "audio_file_path": "/Mixes/Outer_Realms.mp3"},
         {"id": 9, "name": "Trial", "playing": false, "cover_path": "/Covers/trial.jpg", "audio_file_path": "/Mixes/Trial.mp3"},
         {"id": 10, "name": "Firebomb", "playing": false, "cover_path": "/Covers/firebomb.jpg", "audio_file_path": "/Mixes/Firebomb.mp3"},
-        {"id": 11, "name": "Manifest", "playing": false, "cover_path": "/Covers/manifest.jpg", "audio_file_path": "/Mixes/Manifest.mp3"}
+        {"id": 11, "name": "Manifest", "playing": false, "cover_path": "/Covers/manifest.jpg", "audio_file_path": "/Mixes/Manifest.mp3"},
+        {"id": 12, "name": "Simulacrum", "playing": false, "cover_path": "/Covers/simulacrum.jpg", "audio_file_path": "/Mixes/Simulacrum.mp3"}
     ]
 }
