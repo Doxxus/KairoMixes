@@ -3,7 +3,10 @@
     {
         "id": 1,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> b5f60b49c836a774ffc800f87e078390cada141e
         "name": "Ascension Tracklist",
         "tracks": [
             {"id": 1, "artist": "First Person", "title": "Take You Higher", "start_time": 0, "end_time": 109},
@@ -138,7 +141,10 @@
         ]},
     {
         "id": 2,
+<<<<<<< HEAD
 >>>>>>> 53fd2a0 (updated ascension tracklist)
+=======
+>>>>>>> b5f60b49c836a774ffc800f87e078390cada141e
         "name": "Apricity Tracklist",
         "tracks": [
             {"id": 1, "artist": "Ludacris", "title": "What's Your Fantasy (Mythic Image Bootleg)", "start_time": 0, "end_time": 154},
@@ -263,8 +269,8 @@
             {"id": 119, "artist": "Dapreme & Default Noise", "title": "Full Stop", "start_time": 4801, "end_time": 4851},
             {"id": 120, "artist": "Dropset", "title": "Fracture", "start_time": 4824, "end_time": 4873},
             {"id": 121, "artist": "Buunshin", "title": "Retaliate (GROUND Remix)", "start_time": 4834, "end_time": 4895},
-            {"id": 122, "artist": "Camo & Krooked & Mefjus", "title": "Pray For Me (ft. Joe Killington)", "start_time": 4869, "end_time": 3984},
-            {"id": 123, "artist": "Akuma & Dialective", "title": "My Heart", "start_time": 4900, "end_time": 3982},
+            {"id": 122, "artist": "Camo & Krooked & Mefjus", "title": "Pray For Me (ft. Joe Killington)", "start_time": 4869, "end_time": 4984},
+            {"id": 123, "artist": "Akuma & Dialective", "title": "My Heart", "start_time": 4900, "end_time": 4982},
             {"id": 124, "artist": "Audio", "title": "Invasion", "start_time": 4972, "end_time": 5028},
             {"id": 125, "artist": "Ed Rush", "title": "Black Hoodies", "start_time": 5017, "end_time": 5072},
             {"id": 126, "artist": "Finalfix", "title": "Forsaken", "start_time": 5044, "end_time": 5116},
@@ -276,7 +282,7 @@
             {"id": 132, "artist": "Volatile Cycle & Dropset & Konquest", "title": "Close Your Eyes", "start_time": 5270, "end_time": 5447}
         ]},
     {
-        "id": 2,
+        "id": 3,
         "name": "Scintillation Tracklist",
         "tracks": [
             {"id": 1, "artist": "Rihanna", "title": "Diamonds (Burr Oak Bootleg)", "start_time": 0, "end_time": 153},
@@ -382,7 +388,7 @@
             {"id": 101, "artist": "Fade Black ft. Leo Lane", "title": "Sane (Buunshin Remix)", "start_time": 3660, "end_time": 3744}
         ]},
     {
-        "id": 3,
+        "id": 4,
         "name": "Effulgence Tracklist",
         "tracks": [
             {"id": 1, "artist": "Pythius", "title": "In My Head (ft. REEBZ)", "start_time": 0, "end_time": 121},
@@ -487,7 +493,7 @@
             {"id": 100, "artist": "Pythius", "title": "Erase Me (ft. REEBZ)", "start_time": 3544, "end_time": 3674}
         ]},
     {
-        "id": 4,
+        "id": 5,
         "name": "Neurogenesis Tracklist",
         "tracks": [
             {"id": 1, "artist": "Prolix & Biometrix", "title": "Let ur Body Sink (ft. RHI)", "start_time": 0, "end_time": 88},
@@ -586,7 +592,7 @@
             {"id": 94, "artist": "Ryscu", "title": "The Ghost Inside", "start_time": 3575, "end_time": 3684}
         ]},
     {
-        "id": 5,
+        "id": 6,
         "name": "Labyrinth Tracklist",
         "tracks": [
             {"id": 1, "artist": "Rido & Jade", "title": "Maze", "start_time": 0, "end_time": 88},
@@ -688,7 +694,7 @@
             {"id": 97, "artist": "Teddy Killerz", "title": "The Protocol", "start_time": 3500, "end_time": 3600}
         ]},
     {
-        "id": 6,
+        "id": 7,
         "name": "Recalcitrant Tracklist",
         "tracks": [
             {"id": 1, "artist": "Burr Oak", "title": "Criminal Romance", "start_time": 0, "end_time": 154},
@@ -781,7 +787,7 @@
             {"id": 88, "artist": "Ekwols", "title": "Nervous", "start_time": 3470, "end_time": 3613}
         ]},
     {
-        "id": 7,
+        "id": 8,
         "name": "Overtime Tracklist",
         "tracks": [
             {"id": 1, "artist": "Phace", "title": "Beyond Number", "start_time": 0, "end_time": 111},
@@ -877,7 +883,7 @@
             {"id": 91, "artist": "Instinkt", "title": "Zeus", "start_time": 3467, "end_time": 3600}
         ]},
     {
-        "id": 8,
+        "id": 9,
         "name": "Outer Realms Tracklist",
         "tracks": [
             {"id": 1, "artist": "Burr Oak", "title": "Supreme Entity", "start_time": 0, "end_time": 155},
@@ -959,7 +965,7 @@
             {"id": 75, "artist": "Noisia & Former", "title": "Pleasure Model", "start_time": 3566, "end_time": 3673}
         ]},
     {
-        "id": 9,
+        "id": 10,
         "name": "Trial Tracklist",
         "tracks": [
             {"id": 1, "artist": "Magnetude", "title": "Now Run", "start_time": 0, "end_time": 154},
@@ -1045,7 +1051,7 @@
             {"id": 80, "artist": "Magnetude", "title": "I'm For You", "start_time": 3750, "end_time": 3888}
         ]},
     {
-        "id": 10,
+        "id": 11,
         "name": "Firebomb Tracklist",
         "tracks": [
             {"id": 1, "artist": "Optiv & BTK", "title": "Dive Bomb (Pythius Remix)", "start_time": 0, "end_time": 154},
@@ -1125,7 +1131,7 @@
             {"id": 69.5, "artist": "Mefjus", "title": "Divergence", "start_time": 3792, "end_time": 3815}
         ]},
     {
-        "id": 11,
+        "id": 12,
         "name": "Manifest Tracklist",
         "tracks": [
             {"id": 1, "artist": "Mefjus", "title": "Manifest VIP (ft. Maksim)", "start_time": 0, "end_time": 134},
@@ -1180,6 +1186,65 @@
             {"id": 50, "artist": "Ivy Lab", "title": "Peninsula (Spectrasoul Remix)", "start_time": 3448, "end_time": 3526},
             {"id": 51, "artist": "Mefjus", "title": "Sinkhole", "start_time": 3526, "end_time": 3639},
             {"id": 52, "artist": "ΔΞTHΞK", "title": "Vertebrae", "start_time": 3608, "end_time": 3812}
+        ]},
+    {
+        "id": 13,
+        "name": "Simulacrum Tracklist",
+        "tracks": [
+            {"id": 1, "artist": "Frequent", "title": "V.R.E.T World 07", "start_time": 0, "end_time": 81},
+            {"id": 2, "artist": "Culprate & Skope", "title": "Blowfish", "start_time": 39, "end_time": 173},
+            {"id": 3, "artist": "Kursa", "title": "Horse Winker", "start_time": 161, "end_time": 259},
+            {"id": 4, "artist": "Bleep Bloop & Mr. Bill", "title": "Impel Tiltskin", "start_time": 240, "end_time": 394},
+            {"id": 5, "artist": "Frequent", "title": "The Goop", "start_time": 367, "end_time": 539},
+            {"id": 6, "artist": "KOAN Sound", "title": "Virtue", "start_time": 487, "end_time": 684},
+            {"id": 7, "artist": "Shurk", "title": "The Prophecy (Zenji Remix)", "start_time": 636, "end_time": 785},
+            {"id": 8, "artist": "Noisia", "title": "Sinkhole", "start_time": 770, "end_time": 223},
+            {"id": 9, "artist": "DaVIP", "title": "Strange Sounds", "start_time": 874, "end_time": 223},
+            {"id": 10, "artist": "Sinic", "title": "One Makes One", "start_time": 132, "end_time": 223},
+            {"id": 11, "artist": "Inimical", "title": "lim returns (Prod. Lim Jahey)", "start_time": 0, "end_time": 134},
+            {"id": 12, "artist": "Amair", "title": "Closure", "start_time": 132, "end_time": 223},
+            {"id": 13, "artist": "Kursa", "title": "Fall Over", "start_time": 132, "end_time": 223},
+            {"id": 14, "artist": "IntiKon", "title": "Gnomic Pulse", "start_time": 132, "end_time": 223},
+            {"id": 15, "artist": "Skope", "title": "Low Focus", "start_time": 132, "end_time": 223},
+            {"id": 16, "artist": "VELLUM", "title": "Marvin", "start_time": 132, "end_time": 223},
+            {"id": 17, "artist": "Noisia & Ivy Lab", "title": "Possession", "start_time": 132, "end_time": 223},
+            {"id": 18, "artist": "Hybris", "title": "Nitty Gritty Comittee", "start_time": 132, "end_time": 223},
+            {"id": 19, "artist": "Jade Cicada", "title": "More Cowbell", "start_time": 132, "end_time": 223},
+            {"id": 20, "artist": "Mefjus & Emperor", "title": "Flashizm", "start_time": 132, "end_time": 223},
+            {"id": 21, "artist": "Kursa", "title": "Modulator", "start_time": 0, "end_time": 134},
+            {"id": 22, "artist": "KOAN Sound", "title": "Cosmic Tuba", "start_time": 132, "end_time": 223},
+            {"id": 23, "artist": "Barbarix", "title": "Side Effects", "start_time": 132, "end_time": 223},
+            {"id": 24, "artist": "Audkeka", "title": "Archdemon", "start_time": 132, "end_time": 223},
+            {"id": 25, "artist": "Vorso", "title": "Midnight Sun (ft. Ekcle)", "start_time": 132, "end_time": 223},
+            {"id": 26, "artist": "Spectric", "title": "Catnap", "start_time": 132, "end_time": 223},
+            {"id": 27, "artist": "Kursa", "title": "Storm Siren", "start_time": 132, "end_time": 223},
+            {"id": 28, "artist": "Seppa", "title": "Antares", "start_time": 132, "end_time": 223},
+            {"id": 29, "artist": "Think Twice", "title": "Modular (ft. Gadmandubs)", "start_time": 132, "end_time": 223},
+            {"id": 30, "artist": "Alix Perez & Ivy Lab", "title": "Tell Dem", "start_time": 132, "end_time": 223},
+            {"id": 31, "artist": "Frequent", "title": "Weasel Beat", "start_time": 0, "end_time": 134},
+            {"id": 32, "artist": "Bolten M", "title": "Indefensión Aprendida", "start_time": 132, "end_time": 223},
+            {"id": 33, "artist": "Think Twice", "title": "Firefly", "start_time": 132, "end_time": 223},
+            {"id": 34, "artist": "DFNKT & Gemo", "title": "Skewiff", "start_time": 132, "end_time": 223},
+            {"id": 35, "artist": "COPYCATT", "title": "Survive (ft. Maksim)", "start_time": 132, "end_time": 223},
+            {"id": 36, "artist": "Audeka", "title": "Peat Bog", "start_time": 132, "end_time": 223},
+            {"id": 37, "artist": "KOAN Sound", "title": "Tetsuo's Redemption (Billain Remix)", "start_time": 132, "end_time": 223},
+            {"id": 38, "artist": "Teddy Killerz & Icicle", "title": "Louder (ft. DJ Craze)", "start_time": 132, "end_time": 223},
+            {"id": 39, "artist": "Noisia", "title": "Voodoo", "start_time": 132, "end_time": 223},
+            {"id": 40, "artist": "Culprate", "title": "Be You", "start_time": 132, "end_time": 223},
+            {"id": 41, "artist": "Skope", "title": "Mimic", "start_time": 0, "end_time": 134},
+            {"id": 42, "artist": "Canopy", "title": "Blast Door", "start_time": 132, "end_time": 223},
+            {"id": 43, "artist": "Posij", "title": "Grab The Cookie", "start_time": 132, "end_time": 223},
+            {"id": 44, "artist": "K.L.O", "title": "Acid Scratch", "start_time": 132, "end_time": 223},
+            {"id": 45, "artist": "Kursa", "title": "Push the Button", "start_time": 132, "end_time": 223},
+            {"id": 46, "artist": "IMANU", "title": "Noir", "start_time": 132, "end_time": 223},
+            {"id": 47, "artist": "RefraQ", "title": "Experiens (ft. 333)", "start_time": 132, "end_time": 223},
+            {"id": 48, "artist": "Culprate", "title": "Dawn (Frequent & Vorso Remix)", "start_time": 132, "end_time": 223},
+            {"id": 49, "artist": "Skope", "title": "You Know", "start_time": 132, "end_time": 223},
+            {"id": 50, "artist": "Lone Drum", "title": "Dimbox", "start_time": 132, "end_time": 223},
+            {"id": 51, "artist": "Maynix", "title": "Hatch", "start_time": 0, "end_time": 134},
+            {"id": 52, "artist": "Reso", "title": "Axion (KOAN Sound Remix)", "start_time": 132, "end_time": 223},
+            {"id": 53, "artist": "Amair", "title": "Kaur", "start_time": 132, "end_time": 223},
+            {"id": 54, "artist": "Frequent", "title": "V.R.E.T World 07", "start_time": 132, "end_time": 223}
         ]}
     ]
 }
