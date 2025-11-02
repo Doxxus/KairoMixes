@@ -2,11 +2,6 @@
     "tracklists": [
     {
         "id": 1,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> b5f60b49c836a774ffc800f87e078390cada141e
         "name": "Ascension Tracklist",
         "tracks": [
             {"id": 1, "artist": "First Person", "title": "Take You Higher", "start_time": 0, "end_time": 109},
@@ -141,10 +136,6 @@
         ]},
     {
         "id": 2,
-<<<<<<< HEAD
->>>>>>> 53fd2a0 (updated ascension tracklist)
-=======
->>>>>>> b5f60b49c836a774ffc800f87e078390cada141e
         "name": "Apricity Tracklist",
         "tracks": [
             {"id": 1, "artist": "Ludacris", "title": "What's Your Fantasy (Mythic Image Bootleg)", "start_time": 0, "end_time": 154},
