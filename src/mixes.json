@@ -1,7 +1,7 @@
 {
     "mixes": [
         {"id": 1, "name": "Pandemonium", "playing": false, "cover_path": "/Covers/pandemonium.jpg", "audio_file_path": "/Mixes/Pandemonium.mp3"},
-        {"id": 2, "name": "Malediction", "playing": false, "cover_path": "/Covers/malediction.jpg", "audio_file_path": "https://media.doxxus.ca/Malediction.mp3"},
+        {"id": 2, "name": "Malediction", "playing": false, "cover_path": "/Covers/malediction.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Malediction.mp3"},
         {"id": 3, "name": "Precognition", "playing": false, "cover_path": "/Covers/precognition.jpg", "audio_file_path": "/Mixes/Precognition.mp3"},
         {"id": 4, "name": "Ascension", "playing": false, "cover_path": "/Covers/ascension.jpg", "audio_file_path": "/Mixes/Ascension.mp3"},
         {"id": 5, "name": "Apricity", "playing": false, "cover_path": "/Covers/apricity.jpg", "audio_file_path": "/Mixes/Apricity.mp3"},
