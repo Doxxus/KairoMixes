@@ -1,1 +1,2 @@
+Malediciton.mp3 filter=lfs diff=lfs merge=lfs -text
 static/Mixes/Malediction.mp3 filter=lfs diff=lfs merge=lfs -text
