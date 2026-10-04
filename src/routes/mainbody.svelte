@@ -134,7 +134,9 @@
                     {/each}
                 {/if}
             </ul>          
-            <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls on:play="{() => {PlayRequested(mix)}}" on:pause="{() => {PauseRequested(mix)}}" on:ended={() => {OnTrackEnd(mix)}}></audio>
+            <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls controlsList="nodownload" 
+                on:play="{() => {PlayRequested(mix)}}" on:pause="{() => {PauseRequested(mix)}}" on:ended={() => {OnTrackEnd(mix)}}>
+            </audio>
             <button class="tracklist_btn" id="{mix.name}_tracklist" on:click|stopPropagation="{() => {OpenTracklist(mix.id)}}">TRACKLIST</button>
         </button>
     {/each}
