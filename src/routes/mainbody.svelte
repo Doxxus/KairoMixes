@@ -47,6 +47,7 @@
 
     function PlayRequested(trigger_mix: Mix) {
         trigger_mix.playing = true;
+        mix_data = mix_data;
 
         document.title = "Kairo Mixes: " + trigger_mix.name;
         UpdatePlayingTracks();
@@ -54,6 +55,7 @@
 
     function PauseRequested(trigger_mix: Mix) {
         trigger_mix.playing = false;
+        mix_data = mix_data;
 
         document.title = "Kairo Mixes";
         UpdatePlayingTracks();
