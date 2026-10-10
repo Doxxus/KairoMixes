@@ -9,7 +9,7 @@
     import type { Tracklist } from '../objects/tracklist';
     import type { Track } from '../objects/track';
 
-    import { repeat_mix } from '../objects/stores';
+    import { repeat_mix, global_volume } from '../objects/stores';
 	import TracklistModal from '../routes/tracklist_modal.svelte';
 
     export let mix_data: Mix[];
@@ -90,6 +90,14 @@
 
     onMount(() => {
         setInterval(UpdatePlayingTracks, 500);
+
+        const unsubscribe = global_volume.subscribe((volume) => {
+            document.querySelectorAll('audio').forEach((audio) => {
+                audio.volume = volume;
+            });
+        });
+
+        return unsubscribe;
     });
 
     function GetTimeFromSeconds(sec_value: number) : string {

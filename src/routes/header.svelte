@@ -1,6 +1,6 @@
 <script lang="ts">
     import '../sass/header.scss';
-    import { repeat_mix } from '../objects/stores';
+    import { repeat_mix, global_volume } from '../objects/stores';
     
     let repeat_button_image: string = "/assets/no_repeat.png";
     $repeat_mix = false;
@@ -24,6 +24,8 @@
     </div>
     <div class="flex justify-between">
         <!--<a class="self-center dark:text-translucent-violet text-muddy-violet" href="/">Newest Mix</a>-->
+        <input type="range" class="volume_slider" title="Global volume" aria-label="Global volume"
+            min="0" max="1" step="0.01" bind:value={$global_volume} />
         <button title="Toggles whether the mix loops or plays the next mix." class="repeat_button" on:click="{() => {toggleRepeat()}}">
             <img class="repeat_button_img" src={repeat_button_image} alt=""/>
         </button>

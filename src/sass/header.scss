@@ -64,6 +64,14 @@
     right: 5%;
 }
 
+.volume_slider {
+    top: 38px;
+    position: absolute;
+    right: calc(5% + 55px);
+    width: 110px;
+    accent-color: #9a83b4;
+}
+
 .repeat_button_img {
     width: 40px;
     height: 35px;
