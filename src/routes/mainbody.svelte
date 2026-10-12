@@ -258,7 +258,19 @@
             card_size = { w: card.offsetWidth, h: card.offsetHeight };
             expanded_mix_id = mix_id;
             open_mix_id = mix_id;
-        });
+        }).then(() => ScrollToPlayingTrack(mix_id));
+    }
+
+    async function ScrollToPlayingTrack(mix_id: number) {
+        UpdatePlayingTracks();
+        await tick();
+
+        const list = document.querySelector<HTMLElement>(`#tracklist_panel${mix_id} .scrollable_list`);
+        const target = list?.querySelector<HTMLElement>('li.now_playing');
+        if (!list || !target) return;
+
+        const offset = target.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
+        list.scrollTo({ top: offset - (list.clientHeight - target.offsetHeight) / 2, behavior: 'smooth' });
     }
 
     function UpdatePlayingTracks() {
@@ -407,7 +419,7 @@
                 <h2>{mix.name.toUpperCase()}</h2>
                 <ol class="scrollable_list">
                     {#each tracklists[mix.id - 1]?.tracks ?? [] as track}
-                        <li>
+                        <li class:now_playing={mix.playing && playing_tracks[mix.id - 1]?.some((t) => t.id === track.id)}>
                             <button class="track_btn" on:click={() => PlayFromTrack(mix, track)}>
                                 [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}]. {track.artist} - {track.title}
                             </button>
