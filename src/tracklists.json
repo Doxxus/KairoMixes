@@ -195,7 +195,7 @@
             {"id": 105, "artist": "HighThere", "title": "Trippin'", "start_time": 4465, "end_time": 4554},
             {"id": 106, "artist": "Finalfix", "title": "Forsaken (Neonlight Remix)", "start_time": 4543, "end_time": 4633},
             {"id": 107, "artist": "Muse", "title": "Hysteria (Eluun & Burr Oak Cover)", "start_time": 4593, "end_time": 4688},
-            {"id": 108, "artist": "Tryst Temps", "title": "Warp Drive [KOSEN 83]", "start_time": 4677, "end_time": 4755},
+            {"id": 108, "artist": "Tryst Temps", "title": "Warp Drive", "start_time": 4677, "end_time": 4755},
             {"id": 109, "artist": "TR Tactics & Transforma", "title": "Occultism", "start_time": 4722, "end_time": 4800},
             {"id": 110, "artist": "Vici", "title": "Welcome To Your Life", "start_time": 4767, "end_time": 4845},
             {"id": 111, "artist": "Let's Eat Grandma", "title": "I Really Wanna Stay At Your House (Redpill Bootleg)", "start_time": 4817, "end_time": 4934},
@@ -1470,7 +1470,7 @@
         ]},
     {
         "id": 14,
-        "name": "Trial Tracklist",
+        "name": "Tribulation Tracklist",
         "tracks": [
             {"id": 1, "artist": "Magnetude", "title": "Now Run", "start_time": 0, "end_time": 154},
             {"id": 2, "artist": "2Whales", "title": "Zero Gravity", "start_time": 80, "end_time": 132},
@@ -1556,7 +1556,7 @@
         ]},
     {
         "id": 15,
-        "name": "Firebomb Tracklist",
+        "name": "Incendiary Tracklist",
         "tracks": [
             {"id": 1, "artist": "Optiv & BTK", "title": "Dive Bomb (Pythius Remix)", "start_time": 0, "end_time": 154},
             {"id": 2, "artist": "Mefjus", "title": "Surrounded", "start_time": 5, "end_time": 154},

@@ -13,8 +13,8 @@
         {"id": 11, "name": "Recalcitrant", "playing": false, "cover_path": "/Covers/recalcitrant.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Recalcitrant.mp3"},
         {"id": 12, "name": "Overtime", "playing": false, "cover_path": "/Covers/overtime.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Overtime.mp3"},
         {"id": 13, "name": "Outer Realms", "playing": false, "cover_path": "/Covers/outer_realms.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Outer_Realms.mp3"},
-        {"id": 14, "name": "Trial", "playing": false, "cover_path": "/Covers/trial.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Trial.mp3"},
-        {"id": 15, "name": "Firebomb", "playing": false, "cover_path": "/Covers/firebomb.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Firebomb.mp3"},
+        {"id": 14, "name": "Tribulation", "playing": false, "cover_path": "/Covers/tribulation.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Tribulation.mp3"},
+        {"id": 15, "name": "Incendiary", "playing": false, "cover_path": "/Covers/incendiary.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Incendiary.mp3"},
         {"id": 16, "name": "Manifest", "playing": false, "cover_path": "/Covers/manifest.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Manifest.mp3"},
         {"id": 17, "name": "Simulacrum", "playing": false, "cover_path": "/Covers/simulacrum.jpg", "audio_file_path": "https://media.doxxus.ca/Mixes/Simulacrum.mp3"}
     ]
