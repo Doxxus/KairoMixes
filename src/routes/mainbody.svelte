@@ -9,7 +9,7 @@
     import type { Tracklist } from '../objects/tracklist';
     import type { Track } from '../objects/track';
 
-    import { repeat_mix, global_volume } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command } from '../objects/stores';
 	import TracklistModal from '../routes/tracklist_modal.svelte';
 
     export let mix_data: Mix[];
@@ -17,6 +17,58 @@
 
     let show_tracklist = false;
     let playing_tracks: Track[][] = [];
+    let last_mix_index = 0;
+
+    function GetPlayer(index: number): HTMLAudioElement {
+        return document.getElementById(mix_data[index].id.toString()) as HTMLAudioElement;
+    }
+
+    function CurrentMixIndex(): number {
+        const playing = mix_data.findIndex((mix) => mix.playing);
+        return playing >= 0 ? playing : last_mix_index;
+    }
+
+    function SwitchToMix(index: number) {
+        const count = mix_data.length;
+        index = ((index % count) + count) % count;
+
+        for (let i = 0; i < count; i++) {
+            if (i !== index) GetPlayer(i).pause();
+        }
+
+        const target = GetPlayer(index);
+        target.currentTime = 0;
+        target.play();
+    }
+
+    function TogglePlayPause() {
+        const player = GetPlayer(CurrentMixIndex());
+        if (player.paused) player.play();
+        else player.pause();
+    }
+
+    function HandleTransport(action: string) {
+        if (action === 'toggle') TogglePlayPause();
+        else if (action === 'next') SwitchToMix(CurrentMixIndex() + 1);
+        else if (action === 'prev') SwitchToMix(CurrentMixIndex() - 1);
+    }
+
+    $: $is_playing = mix_data.some((mix) => mix.playing);
+    $: {
+        const playing = mix_data.findIndex((mix) => mix.playing);
+        if (playing >= 0) last_mix_index = playing;
+    }
+    $: if (typeof navigator !== 'undefined' && 'mediaSession' in navigator) {
+        navigator.mediaSession.playbackState = $is_playing ? 'playing' : 'paused';
+        const mix = mix_data[last_mix_index];
+        if (mix) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: mix.name,
+                artist: 'Kairo Mixes',
+                artwork: mix.cover_path ? [{ src: mix.cover_path }] : []
+            });
+        }
+    }
 
     for (let i = 0; i < mix_data.length; i++) {
         playing_tracks[i] = [];
@@ -99,7 +151,34 @@
             });
         });
 
-        return unsubscribe;
+        let handled = -1;
+        const unsubscribeTransport = transport_command.subscribe((cmd) => {
+            if (!cmd || cmd.n === handled) return;
+            handled = cmd.n;
+            HandleTransport(cmd.action);
+        });
+
+        const actions: [MediaSessionAction, MediaSessionActionHandler][] = [
+            ['play', () => { const p = GetPlayer(CurrentMixIndex()); p.play(); }],
+            ['pause', () => { GetPlayer(CurrentMixIndex()).pause(); }],
+            ['nexttrack', () => HandleTransport('next')],
+            ['previoustrack', () => HandleTransport('prev')]
+        ];
+        if ('mediaSession' in navigator) {
+            actions.forEach(([name, handler]) => {
+                try { navigator.mediaSession.setActionHandler(name, handler); } catch { /* unsupported */ }
+            });
+        }
+
+        return () => {
+            unsubscribe();
+            unsubscribeTransport();
+            if ('mediaSession' in navigator) {
+                actions.forEach(([name]) => {
+                    try { navigator.mediaSession.setActionHandler(name, null); } catch { /* unsupported */ }
+                });
+            }
+        };
     });
 
     function GetTimeFromSeconds(sec_value: number) : string {
@@ -112,6 +191,17 @@
         ret += seconds.toString();
 
         return ret;
+    }
+
+    function UpdateCursorHalo(event: PointerEvent) {
+        const card = event.currentTarget as HTMLElement;
+
+        card.querySelectorAll<HTMLElement>('.title, .current_track_item, .playing_track, .tracklist_btn')
+            .forEach((element) => {
+                const bounds = element.getBoundingClientRect();
+                element.style.setProperty('--pointer-x', `${event.clientX - bounds.left}px`);
+                element.style.setProperty('--pointer-y', `${event.clientY - bounds.top}px`);
+            });
     }
 
     function OnTrackEnd(trigger_mix: Mix) {       
@@ -133,9 +223,9 @@
 
 <main class="inner_layout">
     {#each mix_data as mix}
-        <button class="container" class:playing={mix.playing} id="b{mix.id}" on:click="{() => {play(mix);}}">
+        <button class="container" class:playing={mix.playing} id="b{mix.id}" on:click="{() => {play(mix);}}" on:pointermove={UpdateCursorHalo}>
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
-            <img class="image" src={mix.cover_path} alt="">           
+            <img class="image" src={mix.cover_path} alt="">
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
                 {#if mix.playing}
                     <li class="current_track_item" transition:fade>Current Tracks</li>

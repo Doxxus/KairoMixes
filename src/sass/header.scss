@@ -72,12 +72,61 @@
     accent-color: #9a83b4;
 }
 
+.transport_controls {
+    top: 32px;
+    position: absolute;
+    right: calc(5% + 185px);
+    display: flex;
+    gap: 6px;
+}
+
+.transport_button {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.15s, color 0.15s;
+    @apply dark:text-translucent-violet text-dark-violet;
+}
+
+.transport_button:hover {
+    transform: scale(1.15);
+    color: #9a83b4;
+}
+
 .repeat_button_img {
-    width: 40px;
-    height: 35px;
-    
-    @apply dark:icon-correct-dark icon-correct;
-} 
+    width: 36px;
+    height: 36px;
+    transition: color 0.15s;
+    @apply dark:text-translucent-violet text-dark-violet;
+}
+
+.repeat_button:hover .repeat_button_img {
+    color: #9a83b4;
+}
+
+.repeat_arrows {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: rotate(0deg);
+    opacity: 1;
+    transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.repeat_slash,
+.repeat_slash_cut {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.3s ease;
+}
+
+.repeat_off .repeat_arrows {
+    transform: rotate(-180deg);
+    opacity: 0.55;
+}
+
+.repeat_off .repeat_slash,
+.repeat_off .repeat_slash_cut {
+    stroke-dashoffset: 0;
+}
 
 /* a:hover {
     font-weight: 700;

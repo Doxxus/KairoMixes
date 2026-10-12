@@ -11,61 +11,29 @@
     }
 
     .title {
-        @apply text-dark-violet;
         font-size: 1.5em;
-        font-family: Helvetica;
-        text-shadow: 2px 2px #DAD5EA;
-        letter-spacing: 5px; 
         position: absolute;
         top: 15%;
         left: 5%;
         width: 90%;
         height: 10%;
-        background: transparent;
-        opacity: 1;
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        overflow: hidden;
-        text-align: center;
         z-index: 20;
     }      
 
     .playing_track_list {
-        z-index: 30;
         position: absolute;
         z-index: 30;
-        background: transparent;
         top: 30%;
         width: 80%;
         left: 10%;
-        text-align: center;
-        opacity: 1;
     }
 
     .current_track_item {
         font-size: 1em;
-        font-family: Helvetica;
-        text-shadow: 2px 2px #DAD5EA;
-        background-color: rgba(218, 213, 234, 0);
-        letter-spacing: 5px;
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        text-align: center;
-        width: 100%;
-        margin: 2px;
     }
 
     .playing_track {
         font-size: .75em;
-        font-family: Helvetica;
-        background-color: rgba(218, 213, 234, 0.2);
-        stroke-width: 10px;
-        letter-spacing: 2px;
-        backdrop-filter: blur(10px);
-        border-radius: 5px;
-        text-align: center;
-        width: 100%;
-        margin: 2px;
     }
 
     .player {
@@ -102,61 +70,29 @@
     }
 
     .title {      
-        @apply text-dark-violet;
         position: absolute;
         font-size: 2.5em;
-        font-weight: 700;
-        font-family: Helvetica;
-        text-shadow: 2px 2px #DAD5EA;
-        letter-spacing: 5px;
         top: 15%;
         left: 12%;
         width: 76%;
         height: 10%;
-        background: transparent;
-        opacity: 1;
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        overflow: hidden;
-        text-align: center;
         z-index: 20;
     }
 
     .playing_track_list {
-        z-index: 30;
         position: absolute;
         z-index: 30;
-        background: transparent;
         top: 35%;
         width: 70%;
         left: 15%;
-        text-align: center;
-        opacity: 1;
     }
 
     .current_track_item {
         font-size: 1.5em;
-        font-family: Helvetica;
-        text-shadow: 2px 2px #DAD5EA;
-        background-color: rgba(218, 213, 234, 0.1);
-        letter-spacing: 5px;
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        text-align: center;
-        width: 100%;
-        margin: 2px;
     }
 
     .playing_track {
         font-size: 1em;
-        font-family: Helvetica;
-        text-shadow: 2px 2px #DAD5EA;
-        letter-spacing: 5px;
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        text-align: center;
-        width: 100%;
-        margin: 2px;
     }
     
     .player {
@@ -241,6 +177,76 @@
     z-index: 0;
 }
 
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding: 0.25em 0.75em;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.75rem;
+    color: #fff;
+    background:
+        radial-gradient(
+            circle 90px at var(--pointer-x, -200px) var(--pointer-y, -200px),
+            rgba(218, 213, 234, 0.38),
+            rgba(218, 213, 234, 0.16) 45%,
+            transparent 75%
+        ),
+        rgba(15, 4, 26, 0.58);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    backdrop-filter: blur(8px);
+}
+
+.title h1 {
+    margin: 0;
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: 0.06em;
+    text-shadow: none;
+}
+
+.playing_track_list {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.current_track_item,
+.playing_track {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0.25rem 0;
+    padding: 0.4em 0.65em;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0.5rem;
+    color: #fff;
+    background:
+        radial-gradient(
+            circle 90px at var(--pointer-x, -200px) var(--pointer-y, -200px),
+            rgba(218, 213, 234, 0.38),
+            rgba(218, 213, 234, 0.16) 45%,
+            transparent 75%
+        ),
+        rgba(15, 4, 26, 0.62);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.35;
+    letter-spacing: 0.025em;
+    text-shadow: none;
+    backdrop-filter: blur(8px);
+}
+
+.current_track_item {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
 @keyframes spin {
     from {transform: translate(-50%, -50%) rotate(0);}
     to   {transform: translate(-50%, -50%) rotate(360deg);}
@@ -248,30 +254,42 @@
 
 .tracklist_btn {
     position: absolute;
-    font-size: 20px;
-    font-family: Helvetica;
-    text-shadow: 2px 2px #DAD5EA;
-    letter-spacing: 5px;
     z-index: 30;
-    background: transparent;
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 5px;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.6rem;
+    color: #fff;
+    background:
+        radial-gradient(
+            circle 90px at var(--pointer-x, -200px) var(--pointer-y, -200px),
+            rgba(218, 213, 234, 0.38),
+            rgba(218, 213, 234, 0.16) 45%,
+            transparent 75%
+        ),
+        rgba(15, 4, 26, 0.7);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    font: 600 0.9rem/1.2 Arial, Helvetica, sans-serif;
+    letter-spacing: 0.08em;
+    text-shadow: none;
+    backdrop-filter: blur(8px);
     bottom: 15px;
     right: 15px;
-    transition: 0.2s;
+    transition: padding 0.2s ease, border-radius 0.2s ease;
+}
+
+.tracklist_btn:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
 }
 
 .tracklist_btn:hover {
     overflow: hidden;
-
     --border-radius: 0.2rem;
     --border-size: 0.1rem;
     --border-bg: conic-gradient(#DAD5EA, #0f041a, #DAD5EA, #0f041a, #DAD5EA);
-    --padding: 0rem;
+    --border-bg: conic-gradient(#DAD5EA, #0f041a, #DAD5EA, #0f041a, #DAD5EA);
 
-    font-size: 2rem;
-    padding: calc(var(--padding) + var(--border-size));
+    padding: 0.65rem 1rem;
     border-radius: var(--border-radius);
     display: inline-block;
 
@@ -298,7 +316,7 @@
         content: '';
         position: absolute;
         inset: var(--border-size);
-        @apply dark:bg-dark-violet bg-translucent-violet;
+        background: rgba(15, 4, 26, 0.96);
         z-index: -1;
         border-radius: calc(var(--border-radius) - var(--border-size));
     }
