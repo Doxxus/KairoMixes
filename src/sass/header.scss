@@ -304,6 +304,36 @@
     stroke-dashoffset: 0;
 }
 
+// Not enough room for title, search and controls on one line: stack them.
+@media (max-width: 1000px) {
+    .header_layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        margin-left: 10px;
+    }
+
+    .title_row {
+        flex-wrap: wrap;
+    }
+
+    .header_layout > div:last-child {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .theme_toggle,
+    .transport_controls,
+    .volume_slider,
+    .repeat_button {
+        position: static;
+        top: auto;
+        right: auto;
+    }
+}
+
 /* a:hover {
     font-weight: 700;
     font-size: 20px;

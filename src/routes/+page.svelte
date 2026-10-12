@@ -15,6 +15,6 @@
     .layout {
         display: grid;
         grid-template-columns: 50px 3fr 50px;
-        grid-template-rows: 80px auto;
+        grid-template-rows: minmax(80px, auto) auto;
     }
 </style>
