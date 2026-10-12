@@ -164,11 +164,21 @@
 
             const h1 = hue(primary), s1 = Math.round(sat(primary) * 100);
             const h2 = hue(secondary), s2 = Math.round(sat(secondary) * 100);
+            const glass_s = Math.min(s1, 45);
             palettes[mix_id] = [
                 `--tl-bg1:hsl(${h1} ${s1}% 74%)`,
                 `--tl-bg2:hsl(${h2} ${s2}% 60%)`,
                 `--tl-text:hsl(${h1} ${Math.min(s1, 60)}% 8%)`,
-                `--tl-accent:hsl(${h2} ${s2}% 24%)`
+                `--tl-accent:hsl(${h2} ${s2}% 24%)`,
+                `--mix-ring-a:hsl(${h1} ${Math.max(s1, 55)}% 70%)`,
+                `--mix-ring-b:hsl(${h2} ${Math.min(s2, 50)}% 16%)`,
+                `--mix-glass:hsl(${h1} ${glass_s}% 9% / 0.6)`,
+                `--mix-glass-strong:hsl(${h1} ${glass_s}% 9% / 0.78)`,
+                `--mix-glass-solid:hsl(${h1} ${glass_s}% 8% / 0.96)`,
+                `--mix-halo:hsl(${h1} ${Math.max(s1, 40)}% 80% / 0.38)`,
+                `--mix-halo-soft:hsl(${h1} ${Math.max(s1, 40)}% 80% / 0.16)`,
+                `--mix-edge:hsl(${h2} ${Math.max(s2, 40)}% 85% / 0.35)`,
+                `--mix-ink:hsl(${h1} ${Math.min(s1, 40)}% 96%)`
             ].join(';');
             palettes = palettes;
         } catch { /* canvas blocked: keep default palette */ }
@@ -326,8 +336,8 @@
 
 <main class="inner_layout">
     {#each mix_data as mix}
-        <div class="mix_wrap" style={palettes[mix.id] ?? ''} class:open={open_mix_id === mix.id} class:expanded={expanded_mix_id === mix.id}>
-        <button class="container" class:playing={mix.playing} id="b{mix.id}"
+        <div class="mix_wrap" class:playing={mix.playing} style={palettes[mix.id] ?? ''} class:open={open_mix_id === mix.id} class:expanded={expanded_mix_id === mix.id}>
+        <button class="container" id="b{mix.id}"
             style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => {play(mix);}}" on:pointermove={UpdateCursorHalo}>
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
             <img class="image" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
@@ -339,11 +349,13 @@
                     {/each}
                 {/if}
             </ul>          
+            <div class="bottom_banner">
             <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls controlsList="nodownload" 
                 on:play="{() => {PlayRequested(mix)}}" on:pause="{() => {PauseRequested(mix)}}" on:ended={() => {OnTrackEnd(mix)}}>
             </audio>
             <button class="tracklist_btn" id="{mix.name}_tracklist" aria-expanded={open_mix_id === mix.id} aria-controls="tracklist_panel{mix.id}"
                 on:click|stopPropagation="{() => {ToggleTracklist(mix.id)}}">{open_mix_id === mix.id ? 'CLOSE' : 'TRACKLIST'}</button>
+            </div>
         </button>
         <aside class="tracklist_panel" id="tracklist_panel{mix.id}" aria-hidden={open_mix_id !== mix.id}>
             <div class="tracklist_inner">
