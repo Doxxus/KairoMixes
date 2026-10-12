@@ -1,8 +1,62 @@
 <script lang="ts">
     import '../sass/header.scss';
-    import { repeat_mix, global_volume, is_playing, transport_command, dark_mode } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, dark_mode, play_request } from '../objects/stores';
     import type { TransportAction } from '../objects/stores';
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
+    import { fly } from 'svelte/transition';
+    import mix_data from '../mixes.json';
+    import tracklist_data from '../tracklists.json';
+
+    type Result = { mix: { id: number, name: string }, track: { id: number, artist: string, title: string, start_time: number } };
+
+    let search_open = false;
+    let query = '';
+    let search_input: HTMLInputElement;
+    let search_count = 0;
+
+    $: results = findTracks(query);
+
+    function findTracks(q: string): Result[] {
+        const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+        if (!terms.length) return [];
+        const found: Result[] = [];
+        for (const mix of mix_data.mixes) {
+            const tl = tracklist_data.tracklists[mix.id - 1];
+            if (!tl) continue;
+            for (const track of tl.tracks) {
+                const hay = `${track.artist} ${track.title} ${mix.name}`.toLowerCase();
+                if (terms.every((t) => hay.includes(t))) found.push({ mix, track });
+                if (found.length >= 30) return found;
+            }
+        }
+        return found;
+    }
+
+    async function toggleSearch() {
+        search_open = !search_open;
+        if (search_open) {
+            await tick();
+            search_input.focus();
+        } else {
+            query = '';
+        }
+    }
+
+    function onSearchKeydown(e: KeyboardEvent) {
+        if (e.key === 'Escape') toggleSearch();
+        else if (e.key === 'Enter' && results.length) pickResult(results[0]);
+    }
+
+    function pickResult(r: Result) {
+        $play_request = { mix_id: r.mix.id, track_id: r.track.id, n: ++search_count };
+        search_open = false;
+        query = '';
+    }
+
+    function formatTime(sec: number): string {
+        const s = sec % 60;
+        return `${Math.floor(sec / 60)}:${s < 10 ? '0' : ''}${s}`;
+    }
 
     onMount(() => {
         $dark_mode = document.documentElement.classList.contains('dark');
@@ -50,9 +104,38 @@
 </script>
 
 <main class="header_layout">
-    <div>
+    <div class="title_row">
         <h1 class="mt-2 dark:text-silver text-charcoal web_title">Kairo Mixes</h1>
+        <div class="search_wrap" class:open={search_open}>
+            <button class="transport_button search_toggle" title="Search tracks" aria-label="Search tracks"
+                aria-expanded={search_open} on:click={toggleSearch}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="10" cy="10" r="6.5" />
+                    <line x1="15" y1="15" x2="21" y2="21" />
+                </svg>
+            </button>
+            <div class="search_field">
+                <input bind:this={search_input} bind:value={query} class="search_input" type="text" placeholder="Search tracks..."
+                    aria-label="Search tracks" autocomplete="off" tabindex={search_open ? 0 : -1}
+                    on:keydown={onSearchKeydown} />
+            </div>
+            {#if search_open && results.length > 0}
+                <ul class="search_results" transition:fly={{ y: -8, duration: 200 }}>
+                    {#each results as r (r.mix.id + '-' + r.track.id)}
+                        <li>
+                            <button class="search_result" on:click={() => pickResult(r)}>
+                                <span class="result_track">{r.track.artist} - {r.track.title}</span>
+                                <span class="result_mix">{r.mix.name} &middot; {formatTime(r.track.start_time)}</span>
+                            </button>
+                        </li>
+                    {/each}
+                </ul>
+            {:else if search_open && query.trim()}
+                <div class="search_results search_empty" transition:fly={{ y: -8, duration: 200 }}>No tracks found</div>
+            {/if}
+        </div>
     </div>
+
     <div class="flex justify-between">
         <!--<a class="self-center dark:text-translucent-violet text-muddy-violet" href="/">Newest Mix</a>-->
         <button class="transport_button theme_toggle" title={$dark_mode ? 'Switch to light mode' : 'Switch to dark mode'}

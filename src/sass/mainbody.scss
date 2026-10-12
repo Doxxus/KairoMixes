@@ -401,6 +401,32 @@ h2 {
     font-weight: 700;
 }
 
+.tracklist_inner .scrollable_list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
+}
+
+.tracklist_inner .scrollable_list .track_btn {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.tracklist_inner .scrollable_list li:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.tracklist_inner .scrollable_list .track_btn:focus-visible {
+    outline: 2px solid var(--tl-accent, currentColor);
+}
+
 @media (max-width: 1000px) {
     .inner_layout {
         grid-template-rows: none;

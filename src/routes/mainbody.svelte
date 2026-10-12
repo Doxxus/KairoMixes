@@ -9,7 +9,7 @@
     import type { Tracklist } from '../objects/tracklist';
     import type { Track } from '../objects/track';
 
-    import { repeat_mix, global_volume, is_playing, transport_command } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, play_request, dark_mode } from '../objects/stores';
 
     export let mix_data: Mix[];
     export let tracklists: Tracklist[];
@@ -95,6 +95,16 @@
         }
     }
 
+    function PlayFromTrack(mix: Mix, track: Track) {
+        for (let i = 0; i < mix_data.length; i++) {
+            if (mix_data[i].id !== mix.id) GetPlayer(i).pause();
+        }
+
+        const audioplayer = document.getElementById(mix.id.toString()) as HTMLAudioElement;
+        audioplayer.currentTime = track.start_time;
+        audioplayer.play();
+    }
+
     function PlayRequested(trigger_mix: Mix) {
         trigger_mix.playing = true;
         mix_data = mix_data;
@@ -112,7 +122,6 @@
     }
 
     const PANEL_MS = 400;
-    let palettes: Record<number, string> = {};
 
     function RgbToHsl(r: number, g: number, b: number): [number, number, number] {
         r /= 255; g /= 255; b /= 255;
@@ -164,24 +173,47 @@
 
             const h1 = hue(primary), s1 = Math.round(sat(primary) * 100);
             const h2 = hue(secondary), s2 = Math.round(sat(secondary) * 100);
-            const glass_s = Math.min(s1, 45);
-            palettes[mix_id] = [
-                `--tl-bg1:hsl(${h1} ${s1}% 74%)`,
-                `--tl-bg2:hsl(${h2} ${s2}% 60%)`,
-                `--tl-text:hsl(${h1} ${Math.min(s1, 60)}% 8%)`,
-                `--tl-accent:hsl(${h2} ${s2}% 24%)`,
-                `--mix-ring-a:hsl(${h1} ${Math.max(s1, 55)}% 70%)`,
-                `--mix-ring-b:hsl(${h2} ${Math.min(s2, 50)}% 16%)`,
-                `--mix-glass:hsl(${h1} ${glass_s}% 9% / 0.6)`,
-                `--mix-glass-strong:hsl(${h1} ${glass_s}% 9% / 0.78)`,
-                `--mix-glass-solid:hsl(${h1} ${glass_s}% 8% / 0.96)`,
-                `--mix-halo:hsl(${h1} ${Math.max(s1, 40)}% 80% / 0.38)`,
-                `--mix-halo-soft:hsl(${h1} ${Math.max(s1, 40)}% 80% / 0.16)`,
-                `--mix-edge:hsl(${h2} ${Math.max(s2, 40)}% 85% / 0.35)`,
-                `--mix-ink:hsl(${h1} ${Math.min(s1, 40)}% 96%)`
-            ].join(';');
-            palettes = palettes;
+            palette_params[mix_id] = [h1, s1, h2, s2];
+            palette_params = palette_params;
         } catch { /* canvas blocked: keep default palette */ }
+    }
+
+    // Dark mode keeps the dark tinted glass; light mode swaps it for a pale tint of the same hues.
+    function BuildPalette([h1, s1, h2, s2]: number[], dark: boolean): string {
+        const glass_s = Math.min(s1, 45);
+        const shared = [
+            `--tl-bg1:hsl(${h1} ${s1}% 74%)`,
+            `--tl-bg2:hsl(${h2} ${s2}% 60%)`,
+            `--tl-text:hsl(${h1} ${Math.min(s1, 60)}% 8%)`,
+            `--tl-accent:hsl(${h2} ${s2}% 24%)`,
+            `--mix-ring-a:hsl(${h1} ${Math.max(s1, 55)}% 70%)`,
+            `--mix-ring-b:hsl(${h2} ${Math.min(s2, 50)}% ${dark ? 16 : 38}%)`
+        ];
+        const themed = dark ? [
+            `--mix-glass:hsl(${h1} ${glass_s}% 9% / 0.6)`,
+            `--mix-glass-strong:hsl(${h1} ${glass_s}% 9% / 0.78)`,
+            `--mix-glass-solid:hsl(${h1} ${glass_s}% 8% / 0.96)`,
+            `--mix-halo:hsl(${h1} ${Math.max(s1, 40)}% 80% / 0.38)`,
+            `--mix-halo-soft:hsl(${h1} ${Math.max(s1, 40)}% 80% / 0.16)`,
+            `--mix-edge:hsl(${h2} ${Math.max(s2, 40)}% 85% / 0.35)`,
+            `--mix-ink:hsl(${h1} ${Math.min(s1, 40)}% 96%)`
+        ] : [
+            `--mix-glass:hsl(${h1} ${Math.max(s1, 55)}% 76% / 0.78)`,
+            `--mix-glass-strong:hsl(${h1} ${Math.max(s1, 55)}% 79% / 0.88)`,
+            `--mix-glass-solid:hsl(${h1} ${Math.max(s1, 55)}% 80% / 0.97)`,
+            `--mix-halo:hsl(${h1} ${Math.max(s1, 40)}% 100% / 0.55)`,
+            `--mix-halo-soft:hsl(${h1} ${Math.max(s1, 40)}% 100% / 0.25)`,
+            `--mix-edge:hsl(${h2} ${Math.max(s2, 40)}% 30% / 0.35)`,
+            `--mix-ink:hsl(${h1} ${Math.min(s1, 50)}% 10%)`
+        ];
+        return [...shared, ...themed].join(';');
+    }
+
+    let palette_params: Record<number, number[]> = {};
+    let palettes: Record<number, string> = {};
+    $: {
+        palettes = {};
+        for (const id in palette_params) palettes[id] = BuildPalette(palette_params[id], $dark_mode);
     }
     let expanded_mix_id: number | null = null;
     let card_size: { w: number; h: number } | null = null;
@@ -271,6 +303,18 @@
             HandleTransport(cmd.action);
         });
 
+        let handled_play = -1;
+        const unsubscribePlay = play_request.subscribe((req) => {
+            if (!req || req.n === handled_play) return;
+            handled_play = req.n;
+            const mix = mix_data.find((m) => m.id === req.mix_id);
+            const track = tracklists[req.mix_id - 1]?.tracks.find((t) => t.id === req.track_id);
+            if (mix && track) {
+                PlayFromTrack(mix, track);
+                document.getElementById('b' + mix.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
         const actions: [MediaSessionAction, MediaSessionActionHandler][] = [
             ['play', () => { const p = GetPlayer(CurrentMixIndex()); p.play(); }],
             ['pause', () => { GetPlayer(CurrentMixIndex()).pause(); }],
@@ -286,6 +330,7 @@
         return () => {
             unsubscribe();
             unsubscribeTransport();
+            unsubscribePlay();
             if ('mediaSession' in navigator) {
                 actions.forEach(([name]) => {
                     try { navigator.mediaSession.setActionHandler(name, null); } catch { /* unsupported */ }
@@ -363,7 +408,9 @@
                 <ol class="scrollable_list">
                     {#each tracklists[mix.id - 1]?.tracks ?? [] as track}
                         <li>
-                            [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}]. {track.artist} - {track.title}
+                            <button class="track_btn" on:click={() => PlayFromTrack(mix, track)}>
+                                [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}]. {track.artist} - {track.title}
+                            </button>
                         </li>
                     {/each}
                 </ol>
