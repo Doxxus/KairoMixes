@@ -4,5 +4,9 @@
 @tailwind utilities;
 
 html {
-    @apply  dark:bg-dark-violet bg-translucent-violet
+    @apply bg-silver;
+}
+
+html.dark {
+    @apply bg-charcoal;
 }

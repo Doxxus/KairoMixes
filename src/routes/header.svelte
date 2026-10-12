@@ -1,7 +1,18 @@
 <script lang="ts">
     import '../sass/header.scss';
-    import { repeat_mix, global_volume, is_playing, transport_command } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, dark_mode } from '../objects/stores';
     import type { TransportAction } from '../objects/stores';
+    import { onMount } from 'svelte';
+
+    onMount(() => {
+        $dark_mode = document.documentElement.classList.contains('dark');
+    });
+
+    function toggleDarkMode() {
+        $dark_mode = !$dark_mode;
+        document.documentElement.classList.toggle('dark', $dark_mode);
+        localStorage.setItem('theme', $dark_mode ? 'dark' : 'light');
+    }
 
     import { tweened } from 'svelte/motion';
     import { cubicInOut } from 'svelte/easing';
@@ -40,10 +51,30 @@
 
 <main class="header_layout">
     <div>
-        <h1 class="mt-2 dark:text-translucent-violet text-dark-violet web_title">Kairo Mixes</h1>
+        <h1 class="mt-2 dark:text-silver text-charcoal web_title">Kairo Mixes</h1>
     </div>
     <div class="flex justify-between">
         <!--<a class="self-center dark:text-translucent-violet text-muddy-violet" href="/">Newest Mix</a>-->
+        <button class="transport_button theme_toggle" title={$dark_mode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label="Toggle dark mode" aria-pressed={$dark_mode} on:click={toggleDarkMode}>
+            <svg class="theme_icon" class:is_dark={$dark_mode} viewBox="0 0 24 24" aria-hidden="true">
+                <mask id="theme_moon_mask">
+                    <rect width="24" height="24" fill="white" />
+                    <circle class="theme_moon_cut" cx="17" cy="7" r="6" fill="black" />
+                </mask>
+                <circle class="theme_body" cx="12" cy="12" r="9" fill="currentColor" mask="url(#theme_moon_mask)" />
+                <g class="theme_rays" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="12" y1="1.5" x2="12" y2="4" />
+                    <line x1="12" y1="20" x2="12" y2="22.5" />
+                    <line x1="1.5" y1="12" x2="4" y2="12" />
+                    <line x1="20" y1="12" x2="22.5" y2="12" />
+                    <line x1="4.6" y1="4.6" x2="6.4" y2="6.4" />
+                    <line x1="17.6" y1="17.6" x2="19.4" y2="19.4" />
+                    <line x1="4.6" y1="19.4" x2="6.4" y2="17.6" />
+                    <line x1="17.6" y1="6.4" x2="19.4" y2="4.6" />
+                </g>
+            </svg>
+        </button>
         <div class="transport_controls">
             <button class="transport_button" title="Previous mix" aria-label="Previous mix" on:click={() => sendTransport('prev')}>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg>
