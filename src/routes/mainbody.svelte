@@ -1,7 +1,7 @@
 <script lang="ts">
     import '../sass/mainbody.scss';
 
-    import { onMount } from 'svelte';
+    import { onMount, tick } from 'svelte';
     import { fade, fly } from 'svelte/transition';
     import { flip } from 'svelte/animate';
 
@@ -10,12 +10,11 @@
     import type { Track } from '../objects/track';
 
     import { repeat_mix, global_volume, is_playing, transport_command } from '../objects/stores';
-	import TracklistModal from '../routes/tracklist_modal.svelte';
 
     export let mix_data: Mix[];
     export let tracklists: Tracklist[];
 
-    let show_tracklist = false;
+    let open_mix_id: number | null = null;
     let playing_tracks: Track[][] = [];
     let last_mix_index = 0;
 
@@ -74,7 +73,6 @@
         playing_tracks[i] = [];
     }
 
-    let current_tracklist: Tracklist = tracklists[0];
 
     function play(trigger_mix: Mix) {
         for (let i = 0; i < mix_data.length; i++) {
@@ -113,11 +111,112 @@
         UpdatePlayingTracks();
     }
 
-    function OpenTracklist(mix_id: number) {
+    const PANEL_MS = 400;
+    let palettes: Record<number, string> = {};
+
+    function RgbToHsl(r: number, g: number, b: number): [number, number, number] {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        const l = (max + min) / 2;
+        const d = max - min;
+        if (d === 0) return [0, 0, l];
+        const s = d / (1 - Math.abs(2 * l - 1));
+        let h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+        h = (h * 60 + 360) % 360;
+        return [h, s, l];
+    }
+
+    function OnCoverLoad(mix_id: number, event: Event) {
+        ExtractPalette(mix_id, event.currentTarget as HTMLImageElement);
+    }
+
+    // Picks the two most prominent (vivid-weighted) hues in the cover and builds panel colours from them.
+    function ExtractPalette(mix_id: number, img: HTMLImageElement) {
+        if (!img.naturalWidth) return;
+        try {
+            const size = 48;
+            const canvas = document.createElement('canvas');
+            canvas.width = canvas.height = size;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            if (!ctx) return;
+            ctx.drawImage(img, 0, 0, size, size);
+            const data = ctx.getImageData(0, 0, size, size).data;
+
+            const hue_weights = new Array(12).fill(0);
+            const hue_sat = new Array(12).fill(0);
+            let total = 0;
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] < 128) continue;
+                const [h, s, l] = RgbToHsl(data[i], data[i + 1], data[i + 2]);
+                const weight = s * (1 - Math.abs(2 * l - 1)) + 0.01;
+                const bucket = Math.floor(h / 30) % 12;
+                hue_weights[bucket] += weight;
+                hue_sat[bucket] += weight * s;
+                total += weight;
+            }
+            if (!total) return;
+
+            const order = hue_weights.map((w, i) => i).sort((a, b) => hue_weights[b] - hue_weights[a]);
+            const primary = order[0];
+            const secondary = hue_weights[order[1]] > total * 0.1 ? order[1] : primary;
+            const hue = (b: number) => b * 30 + 15;
+            const sat = (b: number) => Math.min(0.75, Math.max(0.25, hue_sat[b] / (hue_weights[b] || 1)));
+
+            const h1 = hue(primary), s1 = Math.round(sat(primary) * 100);
+            const h2 = hue(secondary), s2 = Math.round(sat(secondary) * 100);
+            palettes[mix_id] = [
+                `--tl-bg1:hsl(${h1} ${s1}% 74%)`,
+                `--tl-bg2:hsl(${h2} ${s2}% 60%)`,
+                `--tl-text:hsl(${h1} ${Math.min(s1, 60)}% 8%)`,
+                `--tl-accent:hsl(${h2} ${s2}% 24%)`
+            ].join(';');
+            palettes = palettes;
+        } catch { /* canvas blocked: keep default palette */ }
+    }
+    let expanded_mix_id: number | null = null;
+    let card_size: { w: number; h: number } | null = null;
+    let collapse_timer: ReturnType<typeof setTimeout> | undefined;
+
+    // Applies a layout change and slides the other cards from their old positions to their new ones.
+    async function Reflow(change: () => void) {
+        const wraps = Array.from(document.querySelectorAll<HTMLElement>('.mix_wrap'));
+        const before = wraps.map((wrap) => wrap.getBoundingClientRect());
+
+        change();
+        await tick();
+
+        wraps.forEach((wrap, i) => {
+            const after = wrap.getBoundingClientRect();
+            const dx = before[i].left - after.left;
+            const dy = before[i].top - after.top;
+            if (!dx && !dy) return;
+            wrap.animate(
+                [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }],
+                { duration: PANEL_MS, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+            );
+        });
+    }
+
+    function ToggleTracklist(mix_id: number) {
         if (tracklists.length < mix_id) return;
 
-        current_tracklist = tracklists[mix_id - 1];
-        show_tracklist = true;
+        clearTimeout(collapse_timer);
+
+        if (open_mix_id === mix_id) {
+            open_mix_id = null;
+            collapse_timer = setTimeout(() => {
+                Reflow(() => { expanded_mix_id = null; card_size = null; });
+            }, PANEL_MS);
+            return;
+        }
+
+        const card = document.getElementById('b' + mix_id) as HTMLElement;
+        Reflow(() => {
+            // Pin the cover size so it doesn't shrink when its grid cell grows.
+            card_size = { w: card.offsetWidth, h: card.offsetHeight };
+            expanded_mix_id = mix_id;
+            open_mix_id = mix_id;
+        });
     }
 
     function UpdatePlayingTracks() {
@@ -143,6 +242,10 @@
     }
 
     onMount(() => {
+        document.querySelectorAll<HTMLImageElement>('img.image').forEach((img, i) => {
+            if (img.complete && mix_data[i]) ExtractPalette(mix_data[i].id, img);
+        });
+
         setInterval(UpdatePlayingTracks, 500);
 
         const unsubscribe = global_volume.subscribe((volume) => {
@@ -223,9 +326,11 @@
 
 <main class="inner_layout">
     {#each mix_data as mix}
-        <button class="container" class:playing={mix.playing} id="b{mix.id}" on:click="{() => {play(mix);}}" on:pointermove={UpdateCursorHalo}>
+        <div class="mix_wrap" style={palettes[mix.id] ?? ''} class:open={open_mix_id === mix.id} class:expanded={expanded_mix_id === mix.id}>
+        <button class="container" class:playing={mix.playing} id="b{mix.id}"
+            style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => {play(mix);}}" on:pointermove={UpdateCursorHalo}>
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
-            <img class="image" src={mix.cover_path} alt="">
+            <img class="image" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
                 {#if mix.playing}
                     <li class="current_track_item" transition:fade>Current Tracks</li>
@@ -237,19 +342,21 @@
             <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls controlsList="nodownload" 
                 on:play="{() => {PlayRequested(mix)}}" on:pause="{() => {PauseRequested(mix)}}" on:ended={() => {OnTrackEnd(mix)}}>
             </audio>
-            <button class="tracklist_btn" id="{mix.name}_tracklist" on:click|stopPropagation="{() => {OpenTracklist(mix.id)}}">TRACKLIST</button>
+            <button class="tracklist_btn" id="{mix.name}_tracklist" aria-expanded={open_mix_id === mix.id} aria-controls="tracklist_panel{mix.id}"
+                on:click|stopPropagation="{() => {ToggleTracklist(mix.id)}}">{open_mix_id === mix.id ? 'CLOSE' : 'TRACKLIST'}</button>
         </button>
+        <aside class="tracklist_panel" id="tracklist_panel{mix.id}" aria-hidden={open_mix_id !== mix.id}>
+            <div class="tracklist_inner">
+                <h2>{mix.name.toUpperCase()}</h2>
+                <ol class="scrollable_list">
+                    {#each tracklists[mix.id - 1]?.tracks ?? [] as track}
+                        <li>
+                            [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}]. {track.artist} - {track.title}
+                        </li>
+                    {/each}
+                </ol>
+            </div>
+        </aside>
+        </div>
     {/each}
-    <TracklistModal bind:show_tracklist>
-        <h2 slot="header">
-            {current_tracklist.name.toUpperCase()}
-        </h2>
-        <ol class="scrollable_list" slot="track_content">
-            {#each current_tracklist.tracks as track}
-                <li>
-                    [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}]. {track.artist} - {track.title}
-                </li>
-            {/each}
-        </ol>
-    </TracklistModal>
 </main>
