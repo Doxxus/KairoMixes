@@ -390,9 +390,15 @@ h2 {
     counter-increment: track;
     margin: 0 0 0.4rem;
     padding: 0.5em 0.7em;
-    border-left: 3px solid var(--tl-accent, #0f041a);
+    border-left: 3px solid transparent;
     border-radius: 0.3rem;
-    background: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.3);
+    // The left bar is a gradient layer that grows to fill the row when playing
+    background-image: linear-gradient(var(--tl-accent, #0f041a), var(--tl-accent, #0f041a));
+    background-repeat: no-repeat;
+    background-origin: border-box;
+    background-size: 3px 100%;
+    transition: background-size 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
 }
 
 .tracklist_inner .scrollable_list li::before {
@@ -420,13 +426,13 @@ h2 {
 }
 
 .tracklist_inner .scrollable_list li:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 // Currently playing: solid accent fill with light text, clearly different from the pale hover tint
 .tracklist_inner .scrollable_list li.now_playing,
 .tracklist_inner .scrollable_list li.now_playing:hover {
-    background: var(--tl-accent, #0f041a);
+    background-size: 100% 100%;
     color: var(--tl-bg1, #fff);
     font-weight: 700;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);

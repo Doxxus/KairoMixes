@@ -266,11 +266,26 @@
         await tick();
 
         const list = document.querySelector<HTMLElement>(`#tracklist_panel${mix_id} .scrollable_list`);
-        const target = list?.querySelector<HTMLElement>('li.now_playing');
-        if (!list || !target) return;
+        const items = list?.querySelectorAll<HTMLElement>('li.now_playing');
+        if (!list || !items || items.length === 0) return;
 
-        const offset = target.getBoundingClientRect().top - list.getBoundingClientRect().top + list.scrollTop;
-        list.scrollTo({ top: offset - (list.clientHeight - target.offsetHeight) / 2, behavior: 'smooth' });
+        // Center the span covering all currently playing tracks.
+        const listTop = list.getBoundingClientRect().top;
+        const first = items[0].getBoundingClientRect();
+        const last = items[items.length - 1].getBoundingClientRect();
+        const middle = (first.top + last.bottom) / 2 - listTop + list.scrollTop;
+        list.scrollTo({ top: middle - list.clientHeight / 2, behavior: 'smooth' });
+    }
+
+    let last_playing_key = '';
+    $: if (open_mix_id !== null) {
+        const key = open_mix_id + ':' + (playing_tracks[open_mix_id - 1] ?? []).map((t) => t.id).join(',');
+        if (key !== last_playing_key) {
+            last_playing_key = key;
+            ScrollToPlayingTrack(open_mix_id);
+        }
+    } else {
+        last_playing_key = '';
     }
 
     function UpdatePlayingTracks() {
