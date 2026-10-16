@@ -279,5 +279,12 @@
 
     @media (max-width: 600px) {
         .total { display: none; }
+
+        .custom_player { gap: 0.2rem; font-size: 0.7rem; }
+        .ctl_btn { min-width: 1.9rem; height: 1.9rem; padding: 0 0.2rem; border-radius: 0.4rem; }
+        .play_btn { min-width: 2.2rem; height: 2.2rem; }
+        .icon { width: 1.1rem; height: 1.1rem; }
+        .time_label { min-width: 1.9rem; }
+        .seek_bar { min-width: 20px; }
     }
 </style>

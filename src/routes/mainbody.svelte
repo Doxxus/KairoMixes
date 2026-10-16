@@ -233,6 +233,18 @@
         });
     }
 
+    // The pinned cover size goes stale when the viewport changes, so close any open tracklist.
+    let last_inner_width = typeof window !== 'undefined' ? window.innerWidth : 0;
+    function OnWindowResize() {
+        if (window.innerWidth === last_inner_width) return;
+        last_inner_width = window.innerWidth;
+        if (open_mix_id === null && expanded_mix_id === null) return;
+        clearTimeout(collapse_timer);
+        open_mix_id = null;
+        expanded_mix_id = null;
+        card_size = null;
+    }
+
     function ToggleTracklist(mix_id: number) {
         if (tracklists.length < mix_id) return;
 
@@ -353,17 +365,6 @@
         return ret;
     }
 
-    function UpdateCursorHalo(event: PointerEvent) {
-        const card = event.currentTarget as HTMLElement;
-
-        card.querySelectorAll<HTMLElement>('.title, .current_track_item, .playing_track, .tracklist_btn')
-            .forEach((element) => {
-                const bounds = element.getBoundingClientRect();
-                element.style.setProperty('--pointer-x', `${event.clientX - bounds.left}px`);
-                element.style.setProperty('--pointer-y', `${event.clientY - bounds.top}px`);
-            });
-    }
-
     function OnTrackEnd(trigger_mix: Mix) {
         const index = mix_data.indexOf(trigger_mix);
         const next = $repeat_mix ? index : (index + 1) % mix_data.length;
@@ -371,11 +372,13 @@
     }
 </script>
 
+<svelte:window on:resize={OnWindowResize} />
+
 <main class="inner_layout">
     {#each mix_data as mix}
         <div class="mix_wrap" class:playing={mix.playing} style={palettes[mix.id] ?? ''} class:open={open_mix_id === mix.id} class:expanded={expanded_mix_id === mix.id}>
         <button class="container" id="b{mix.id}"
-            style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => TogglePlayMix(mix)}" on:pointermove={UpdateCursorHalo}>
+            style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => TogglePlayMix(mix)}">
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
             <img class="image" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >

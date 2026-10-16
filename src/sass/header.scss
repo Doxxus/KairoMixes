@@ -371,6 +371,24 @@
         position: static;
         flex-wrap: wrap;
     }
+
+    // Once scrolled, dock the global controls to the bottom of the screen.
+    .global_controls.scrolled {
+        top: auto;
+        right: auto;
+        left: 50%;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        transform: translateX(-50%);
+        max-width: calc(100vw - 16px);
+        box-sizing: border-box;
+        gap: 8px;
+        padding: 6px 12px;
+    }
+
+    .global_controls.scrolled .volume_slider {
+        width: 80px;
+        min-width: 0;
+    }
 }
 
 /* a:hover {
