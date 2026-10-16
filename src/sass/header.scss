@@ -52,24 +52,47 @@
     }
 }
 
-.repeat_button {
-    top: 30px;
+.global_controls {
     position: absolute;
+    top: 30px;
     right: 5%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease;
+}
+
+.global_controls.scrolled {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 200;
+    padding: 6px 14px;
+    border-color: #8b9096;
+    background-color: rgba(250, 250, 252, 0.85);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.dark .global_controls.scrolled {
+    background-color: rgba(20, 20, 24, 0.8);
+}
+
+.repeat_button {
+    position: static;
 }
 
 .volume_slider {
-    top: 38px;
-    position: absolute;
-    right: calc(5% + 55px);
+    position: static;
     width: 110px;
     accent-color: #8b9096;
 }
 
 .transport_controls {
-    top: 32px;
-    position: absolute;
-    right: calc(5% + 185px);
+    position: static;
     display: flex;
     gap: 6px;
 }
@@ -95,6 +118,28 @@
     border: 1px solid transparent;
     transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
     @apply dark:text-silver text-charcoal;
+}
+
+.search_wrap.scrolled {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    margin-top: 0;
+    z-index: 200;
+    padding: 6px 10px;
+    border-color: #8b9096;
+    background-color: rgba(250, 250, 252, 0.85);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.dark .search_wrap.scrolled,
+.dark .search_wrap.scrolled.open {
+    background-color: rgba(20, 20, 24, 0.8);
+}
+
+.search_wrap.scrolled.open {
+    background-color: rgba(250, 250, 252, 0.85);
 }
 
 .search_wrap.open {
@@ -210,9 +255,7 @@
 }
 
 .theme_toggle {
-    top: 32px;
-    position: absolute;
-    right: calc(5% + 300px);
+    position: static;
 }
 
 // Dark mode shows the sun (click to go light); light mode shows the moon.
@@ -324,13 +367,9 @@
         margin-top: 8px;
     }
 
-    .theme_toggle,
-    .transport_controls,
-    .volume_slider,
-    .repeat_button {
+    .global_controls:not(.scrolled) {
         position: static;
-        top: auto;
-        right: auto;
+        flex-wrap: wrap;
     }
 }
 

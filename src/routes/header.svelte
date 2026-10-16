@@ -9,6 +9,7 @@
 
     type Result = { mix: { id: number, name: string }, track: { id: number, artist: string, title: string, start_time: number } };
 
+    let scroll_y = 0;
     let search_open = false;
     let query = '';
     let search_input: HTMLInputElement;
@@ -103,10 +104,12 @@
     }
 </script>
 
+<svelte:window bind:scrollY={scroll_y} />
+
 <main class="header_layout">
     <div class="title_row">
         <h1 class="mt-2 dark:text-silver text-charcoal web_title">Kairo Mixes</h1>
-        <div class="search_wrap" class:open={search_open}>
+        <div class="search_wrap" class:open={search_open} class:scrolled={scroll_y > 60}>
             <button class="transport_button search_toggle" title="Search tracks" aria-label="Search tracks"
                 aria-expanded={search_open} on:click={toggleSearch}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
@@ -138,6 +141,7 @@
 
     <div class="flex justify-between">
         <!--<a class="self-center dark:text-translucent-violet text-muddy-violet" href="/">Newest Mix</a>-->
+        <div class="global_controls" class:scrolled={scroll_y > 60}>
         <button class="transport_button theme_toggle" title={$dark_mode ? 'Switch to light mode' : 'Switch to dark mode'}
             aria-label="Toggle dark mode" aria-pressed={$dark_mode} on:click={toggleDarkMode}>
             <svg class="theme_icon" class:is_dark={$dark_mode} viewBox="0 0 24 24" aria-hidden="true">
@@ -188,5 +192,6 @@
                 <line class="repeat_slash" x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round" pathLength="1" />
             </svg>
         </button>
+        </div>
     </div>
 </main>
