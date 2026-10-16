@@ -9,7 +9,9 @@
     import type { Tracklist } from '../objects/tracklist';
     import type { Track } from '../objects/track';
 
-    import { repeat_mix, global_volume, is_playing, transport_command, play_request, dark_mode } from '../objects/stores';
+    import TransportControls from './transport_controls.svelte';
+
+    import { repeat_mix, is_playing, transport_command, play_request, dark_mode } from '../objects/stores';
 
     export let mix_data: Mix[];
     export let tracklists: Tracklist[];
@@ -18,8 +20,18 @@
     let playing_tracks: Track[][] = [];
     let last_mix_index = 0;
 
+    function GetPlayerById(mix_id: number): HTMLAudioElement {
+        return document.getElementById(mix_id.toString()) as HTMLAudioElement;
+    }
+
     function GetPlayer(index: number): HTMLAudioElement {
-        return document.getElementById(mix_data[index].id.toString()) as HTMLAudioElement;
+        return GetPlayerById(mix_data[index].id);
+    }
+
+    function PauseOthers(keep_mix_id: number) {
+        for (const mix of mix_data) {
+            if (mix.id !== keep_mix_id) GetPlayerById(mix.id).pause();
+        }
     }
 
     function CurrentMixIndex(): number {
@@ -31,9 +43,7 @@
         const count = mix_data.length;
         index = ((index % count) + count) % count;
 
-        for (let i = 0; i < count; i++) {
-            if (i !== index) GetPlayer(i).pause();
-        }
+        PauseOthers(mix_data[index].id);
 
         const target = GetPlayer(index);
         target.currentTime = 0;
@@ -73,34 +83,18 @@
         playing_tracks[i] = [];
     }
 
+    function TogglePlayMix(mix: Mix) {
+        PauseOthers(mix.id);
 
-    function play(trigger_mix: Mix) {
-        for (let i = 0; i < mix_data.length; i++) {
-            if (i === trigger_mix.id - 1) continue;
-
-            mix_data[i].playing = false;
-            let audioplayer: HTMLAudioElement = document.getElementById((i + 1).toString()) as HTMLAudioElement;
-            audioplayer.pause();
-        }
-
-        trigger_mix.playing = !trigger_mix.playing;
-
-        let audioplayer: HTMLAudioElement = document.getElementById(trigger_mix.id.toString()) as HTMLAudioElement;
-
-        if (trigger_mix.playing === true) {
-            audioplayer.play();
-        }
-        else if (trigger_mix.playing === false) {
-            audioplayer.pause();
-        }
+        const audioplayer = GetPlayerById(mix.id);
+        if (audioplayer.paused) audioplayer.play();
+        else audioplayer.pause();
     }
 
     function PlayFromTrack(mix: Mix, track: Track) {
-        for (let i = 0; i < mix_data.length; i++) {
-            if (mix_data[i].id !== mix.id) GetPlayer(i).pause();
-        }
+        PauseOthers(mix.id);
 
-        const audioplayer = document.getElementById(mix.id.toString()) as HTMLAudioElement;
+        const audioplayer = GetPlayerById(mix.id);
         audioplayer.currentTime = track.start_time;
         audioplayer.play();
     }
@@ -289,25 +283,12 @@
     }
 
     function UpdatePlayingTracks() {
-        let audioplayer: HTMLAudioElement = document.getElementById(mix_data[0].id.toString()) as HTMLAudioElement;
-        let tracklist_id: number = mix_data[0].id;
+        const playing = mix_data.find((mix) => mix.playing) ?? mix_data[0];
+        const tracklist = tracklists[playing.id - 1];
+        if (tracklist == undefined) return;
 
-        for (let i = 0; i < mix_data.length; i++) {
-            if (!mix_data[i].playing) continue;
-            audioplayer = document.getElementById(mix_data[i].id.toString()) as HTMLAudioElement;
-            tracklist_id = mix_data[i].id;
-            break;
-        }
-
-        if (tracklists[tracklist_id - 1] == undefined) return;
-
-        playing_tracks[tracklist_id - 1] = [];
-
-        tracklists[tracklist_id - 1].tracks.forEach((track) => {
-            if (track.start_time < audioplayer.currentTime && track.end_time > audioplayer.currentTime) {
-                playing_tracks[tracklist_id - 1] = [...playing_tracks[tracklist_id - 1], track];
-            }
-        });
+        const time = GetPlayerById(playing.id).currentTime;
+        playing_tracks[playing.id - 1] = tracklist.tracks.filter((track) => track.start_time < time && track.end_time > time);
     }
 
     onMount(() => {
@@ -315,13 +296,7 @@
             if (img.complete && mix_data[i]) ExtractPalette(mix_data[i].id, img);
         });
 
-        setInterval(UpdatePlayingTracks, 500);
-
-        const unsubscribe = global_volume.subscribe((volume) => {
-            document.querySelectorAll('audio').forEach((audio) => {
-                audio.volume = volume;
-            });
-        });
+        const interval = setInterval(UpdatePlayingTracks, 500);
 
         let handled = -1;
         const unsubscribeTransport = transport_command.subscribe((cmd) => {
@@ -343,7 +318,7 @@
         });
 
         const actions: [MediaSessionAction, MediaSessionActionHandler][] = [
-            ['play', () => { const p = GetPlayer(CurrentMixIndex()); p.play(); }],
+            ['play', () => { GetPlayer(CurrentMixIndex()).play(); }],
             ['pause', () => { GetPlayer(CurrentMixIndex()).pause(); }],
             ['nexttrack', () => HandleTransport('next')],
             ['previoustrack', () => HandleTransport('prev')]
@@ -355,7 +330,7 @@
         }
 
         return () => {
-            unsubscribe();
+            clearInterval(interval);
             unsubscribeTransport();
             unsubscribePlay();
             if ('mediaSession' in navigator) {
@@ -389,20 +364,10 @@
             });
     }
 
-    function OnTrackEnd(trigger_mix: Mix) {       
-        let audioplayer: HTMLAudioElement;
-        
-        if ($repeat_mix) {
-            audioplayer = document.getElementById(trigger_mix.id.toString()) as HTMLAudioElement;
-        }     
-        else if (trigger_mix.id == mix_data.length) {
-            audioplayer = document.getElementById(mix_data[0].id.toString()) as HTMLAudioElement;
-        }
-        else {
-            audioplayer = document.getElementById((trigger_mix.id + 1).toString()) as HTMLAudioElement;
-        }
-
-        audioplayer.play();
+    function OnTrackEnd(trigger_mix: Mix) {
+        const index = mix_data.indexOf(trigger_mix);
+        const next = $repeat_mix ? index : (index + 1) % mix_data.length;
+        GetPlayer(next).play();
     }
 </script>
 
@@ -410,7 +375,7 @@
     {#each mix_data as mix}
         <div class="mix_wrap" class:playing={mix.playing} style={palettes[mix.id] ?? ''} class:open={open_mix_id === mix.id} class:expanded={expanded_mix_id === mix.id}>
         <button class="container" id="b{mix.id}"
-            style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => {play(mix);}}" on:pointermove={UpdateCursorHalo}>
+            style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => TogglePlayMix(mix)}" on:pointermove={UpdateCursorHalo}>
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
             <img class="image" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
@@ -422,9 +387,9 @@
                 {/if}
             </ul>          
             <div class="bottom_banner">
-            <audio class="player" id={mix.id.toString()} src={mix.audio_file_path} controls controlsList="nodownload" 
-                on:play="{() => {PlayRequested(mix)}}" on:pause="{() => {PauseRequested(mix)}}" on:ended={() => {OnTrackEnd(mix)}}>
-            </audio>
+            <TransportControls {mix}
+                on:play={() => PlayRequested(mix)} on:pause={() => PauseRequested(mix)} on:ended={() => OnTrackEnd(mix)}
+                on:toggle={() => TogglePlayMix(mix)} on:seek={UpdatePlayingTracks} />
             <button class="tracklist_btn" id="{mix.name}_tracklist" aria-expanded={open_mix_id === mix.id} aria-controls="tracklist_panel{mix.id}"
                 on:click|stopPropagation="{() => {ToggleTracklist(mix.id)}}">{open_mix_id === mix.id ? 'CLOSE' : 'TRACKLIST'}</button>
             </div>

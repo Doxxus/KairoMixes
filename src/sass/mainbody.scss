@@ -35,26 +35,6 @@
     .playing_track {
         font-size: .75em;
     }
-
-    .player {
-        position: absolute;
-        z-index: 10;
-        width: 90%;
-        height: 10%;
-        top: 70%;
-        left: 5%;
-    }
-
-    audio::-webkit-media-controls-enclosure {
-        @apply stroke-dark-violet;
-
-        stroke-width: 5px;
-        stroke-opacity: 1;
-        background-color: var(--mix-halo-soft, rgba(218, 213, 234, 0.2));
-        opacity: 1;
-        backdrop-filter: blur(10px);
-        transition: 0.2s linear;
-    }
 }
 
 @media (min-width: 1000px) {
@@ -93,30 +73,6 @@
 
     .playing_track {
         font-size: 1em;
-    }
-    
-    .player {
-        position: absolute;
-        z-index: 10;
-        width: 76%;
-        height: 10%;
-        top: 70%;
-        left: 12%;
-    }
-
-    audio::-webkit-media-controls-enclosure {
-        @apply stroke-dark-violet;
-
-        stroke-width: 5px;
-        stroke-opacity: 1;
-        background-color: rgba(218, 213, 234, 0);
-        opacity: 1;
-        backdrop-filter: blur(10px);
-        transition: 0.2s linear;
-    }
-
-    audio::-webkit-media-controls-enclosure:hover {
-        background-color: var(--mix-halo-soft, rgba(218, 213, 234, 0.2));
     }
 }    
 
@@ -512,14 +468,6 @@ h2 {
     background: var(--mix-glass, rgba(15, 4, 26, 0.58));
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(8px);
-}
-
-.bottom_banner > .player {
-    position: static;
-    flex: 1 1 auto;
-    min-width: 0;
-    width: auto;
-    height: 40px;
 }
 
 .bottom_banner > .tracklist_btn {
