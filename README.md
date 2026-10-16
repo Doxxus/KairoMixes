@@ -31,6 +31,3 @@ npm run preview
 ## Mix data
 
 Mix titles, cover art, and audio URLs are defined in `src/mixes.json`. Timestamped tracklists are defined in `src/tracklists.json`.
-
-## TODO
-- [x] Make custom transport controls / audio player for each mix card.
