@@ -55,6 +55,16 @@
         }
     }
 
+    function OnWindowKeydown(e: KeyboardEvent) {
+        if (!mix.playing || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+        // Leave arrows alone for text fields and sliders, which use them natively
+        if ((e.target as HTMLElement | null)?.closest('input, textarea, select, [contenteditable]')) return;
+        e.preventDefault();
+        if (e.key === 'ArrowLeft') Skip(-1, back_step);
+        else Skip(1, forward_step);
+    }
+
     function Choose(dir: -1 | 1, step: number | 'edge') {
         if (dir < 0) back_step = step; else forward_step = step;
         (document.activeElement as HTMLElement | null)?.blur();
@@ -73,6 +83,9 @@
         return `${mins}:${ss}`;
     }
 </script>
+
+<!-- Capture, because the player group stops keydown propagation -->
+<svelte:window on:keydown|capture={OnWindowKeydown} />
 
 <audio id={mix.id.toString()} src={mix.audio_file_path} preload="metadata" bind:this={audio}
     on:play on:pause on:ended

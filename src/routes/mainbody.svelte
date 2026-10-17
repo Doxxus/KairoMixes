@@ -11,7 +11,7 @@
 
     import TransportControls from './transport_controls.svelte';
 
-    import { repeat_mix, is_playing, transport_command, play_request, dark_mode } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, play_request, dark_mode } from '../objects/stores';
 
     export let mix_data: Mix[];
     export let tracklists: Tracklist[];
@@ -376,6 +376,17 @@
         return `${minutes}:${ss}`;
     }
 
+    const VOLUME_STEP = 0.05;
+
+    function OnVolumeKeydown(e: KeyboardEvent) {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+        if ((e.target as HTMLElement | null)?.closest('input, textarea, select, [contenteditable]')) return;
+        e.preventDefault();
+        const delta = e.key === 'ArrowUp' ? VOLUME_STEP : -VOLUME_STEP;
+        $global_volume = Math.round(Math.min(Math.max($global_volume + delta, 0), 1) * 100) / 100;
+    }
+
     function OnTrackEnd(trigger_mix: Mix) {
         const index = mix_data.indexOf(trigger_mix);
         const next = $repeat_mix ? index : (index + 1) % mix_data.length;
@@ -383,7 +394,7 @@
     }
 </script>
 
-<svelte:window on:resize={OnWindowResize} />
+<svelte:window on:resize={OnWindowResize} on:keydown|capture={OnVolumeKeydown} />
 
 <main class="inner_layout">
     {#each mix_data as mix}
