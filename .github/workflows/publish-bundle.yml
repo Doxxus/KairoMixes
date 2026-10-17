@@ -1,0 +1,56 @@
+name: Publish web bundle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# No token access by default; the job below opts in to what it needs
+permissions: {}
+
+concurrency:
+  group: publish-bundle
+  cancel-in-progress: false
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+
+      - name: Package bundle
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          cd build
+          zip -r ../bundle.zip .
+          cd ..
+          echo "$COMMIT_SHA" > version.txt
+          sha256sum bundle.zip | cut -d' ' -f1 > bundle.sha256
+
+      # Rolling release: the app always reads the "latest-bundle" tag
+      - name: Publish release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: latest-bundle
+          target_commitish: ${{ github.sha }}
+          name: Latest bundle (${{ github.sha }})
+          body: ${{ github.sha }}
+          files: |
+            bundle.zip
+            bundle.sha256
+            version.txt
+          make_latest: true
