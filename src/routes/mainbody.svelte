@@ -259,6 +259,7 @@
         }
 
         const card = document.getElementById('b' + mix_id) as HTMLElement;
+        panel_settle_at = performance.now() + PANEL_MS + 50;
         Reflow(() => {
             // Pin the cover size so it doesn't shrink when its grid cell grows.
             card_size = { w: card.offsetWidth, h: card.offsetHeight };
@@ -267,13 +268,24 @@
         }).then(() => ScrollToPlayingTrack(mix_id));
     }
 
+    // The panel's width/height animate open, so text wraps differently until it settles;
+    // measuring before then yields wrong positions and scrolls to the wrong spot (often the bottom).
+    let panel_settle_at = 0;
+    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
     async function ScrollToPlayingTrack(mix_id: number) {
         UpdatePlayingTracks();
         await tick();
 
+        const wait = panel_settle_at - performance.now();
+        if (wait > 0) {
+            await sleep(wait);
+            if (open_mix_id !== mix_id) return;
+        }
+
         const list = document.querySelector<HTMLElement>(`#tracklist_panel${mix_id} .scrollable_list`);
         const items = list?.querySelectorAll<HTMLElement>('li.now_playing');
-        if (!list || !items || items.length === 0) return;
+        if (!list || !items || items.length === 0 || !list.clientHeight) return;
 
         // Center the span covering all currently playing tracks.
         const listTop = list.getBoundingClientRect().top;
@@ -354,15 +366,14 @@
     });
 
     function GetTimeFromSeconds(sec_value: number) : string {
-        let ret: string = "";
-        let minutes: number = Math.floor(sec_value / 60);
-        let seconds: number = sec_value % 60;
+        const whole = Math.floor(sec_value);
+        const hours = Math.floor(whole / 3600);
+        const minutes = Math.floor((whole % 3600) / 60);
+        const seconds = whole % 60;
+        const ss = seconds.toString().padStart(2, '0');
 
-        ret += minutes.toString() + ':';
-        if (seconds < 10) ret += '0';
-        ret += seconds.toString();
-
-        return ret;
+        if (hours > 0) return `${hours}:${minutes.toString().padStart(2, '0')}:${ss}`;
+        return `${minutes}:${ss}`;
     }
 
     function OnTrackEnd(trigger_mix: Mix) {
@@ -392,7 +403,9 @@
             <div class="bottom_banner">
             <TransportControls {mix}
                 on:play={() => PlayRequested(mix)} on:pause={() => PauseRequested(mix)} on:ended={() => OnTrackEnd(mix)}
-                on:toggle={() => TogglePlayMix(mix)} on:seek={UpdatePlayingTracks} />
+                on:toggle={() => TogglePlayMix(mix)} on:seek={UpdatePlayingTracks}
+                on:next={() => SwitchToMix(mix_data.indexOf(mix) + 1)}
+                on:prev={() => SwitchToMix(mix_data.indexOf(mix) - 1)} />
             <button class="tracklist_btn" id="{mix.name}_tracklist" aria-expanded={open_mix_id === mix.id} aria-controls="tracklist_panel{mix.id}"
                 on:click|stopPropagation="{() => {ToggleTracklist(mix.id)}}">{open_mix_id === mix.id ? 'CLOSE' : 'TRACKLIST'}</button>
             </div>

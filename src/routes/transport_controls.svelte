@@ -7,7 +7,7 @@
     export let mix: Mix;
     export let audio: HTMLAudioElement | undefined = undefined;
 
-    const dispatch = createEventDispatcher<{ toggle: void, seek: void }>();
+    const dispatch = createEventDispatcher<{ toggle: void, seek: void, next: void, prev: void }>();
 
     let current_time = 0;
     let duration = 0;
@@ -36,14 +36,41 @@
         SeekTo(Math.min(Math.max(audio.currentTime + delta, 0), duration || Infinity));
     }
 
+    const STEPS = [10, 30, 60];
+    const RESTART_THRESHOLD = 3;
+    // Each skip button remembers its own choice: a number of seconds, or 'edge' (restart / skip to next mix)
+    let back_step: number | 'edge' = 10;
+    let forward_step: number | 'edge' = 10;
+
+    function Skip(dir: -1 | 1, step: number | 'edge') {
+        if (!audio) return;
+        if (step !== 'edge') return SeekBy(dir * step);
+        if (dir > 0) return dispatch('next');
+        // Restart only when the mix is in progress; otherwise go to the previous mix
+        if (audio.currentTime > RESTART_THRESHOLD) {
+            seek_pulse = { dir, n: seek_pulse.n + 1 };
+            SeekTo(0);
+        } else {
+            dispatch('prev');
+        }
+    }
+
+    function Choose(dir: -1 | 1, step: number | 'edge') {
+        if (dir < 0) back_step = step; else forward_step = step;
+        (document.activeElement as HTMLElement | null)?.blur();
+    }
+
     function ToggleMute() {
         if (audio) audio.muted = !audio.muted;
     }
 
     function FormatTime(seconds: number): string {
         const whole = Math.floor(seconds);
-        const secs = whole % 60;
-        return `${Math.floor(whole / 60)}:${secs < 10 ? '0' : ''}${secs}`;
+        const hours = Math.floor(whole / 3600);
+        const mins = Math.floor((whole % 3600) / 60);
+        const ss = (whole % 60).toString().padStart(2, '0');
+        if (hours > 0) return `${hours}:${mins.toString().padStart(2, '0')}:${ss}`;
+        return `${mins}:${ss}`;
     }
 </script>
 
@@ -56,35 +83,68 @@
 <!-- The card is itself a button, so clicks/keys here must not bubble up and toggle playback -->
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
 <div class="custom_player" role="group" aria-label="{mix.name} player controls" on:click|stopPropagation on:keydown|stopPropagation>
-    <button type="button" class="ctl_btn" aria-label="Back 10 seconds" on:click={() => SeekBy(-10)}>
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-            <g transform="translate(24 0) scale(-1 1)">
-                {#key seek_pulse.n}
-                    <g class="seek_arc" class:spin={seek_pulse.n > 0 && seek_pulse.dir === -1}>
-                        <path d="M12 4.5a7.5 7.5 0 1 1-7.5 7.5M12 1.5l3.5 3-3.5 3" />
+    <div class="skip_wrap">
+        <button type="button" class="ctl_btn" aria-haspopup="true"
+            aria-label={back_step === 'edge' ? 'Restart' : `Back ${back_step} seconds`} on:click={() => Skip(-1, back_step)}>
+            {#if back_step === 'edge'}
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M19 5L9 12l10 7z" /></svg>
+            {:else}
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <g transform="translate(24 0) scale(-1 1)">
+                        {#key seek_pulse.n}
+                            <g class="seek_arc" class:spin={seek_pulse.n > 0 && seek_pulse.dir === -1}>
+                                <path d="M12 4.5a7.5 7.5 0 1 1-7.5 7.5M12 1.5l3.5 3-3.5 3" />
+                            </g>
+                        {/key}
                     </g>
-                {/key}
-            </g>
-            <text x="12" y="15" text-anchor="middle" class="seek_num">10</text>
-        </svg>
-    </button>
+                    <text x="12" y="15" text-anchor="middle" class="seek_num">{back_step}</text>
+                </svg>
+            {/if}
+        </button>
+        <div class="skip_menu" role="menu" aria-label="Back options">
+            <div class="skip_menu_inner">
+                {#each STEPS as s}
+                    <button type="button" role="menuitem" class="skip_opt" class:active={back_step === s} on:click={() => Choose(-1, s)}>&minus;{s}s</button>
+                {/each}
+                <button type="button" role="menuitem" class="skip_opt" class:active={back_step === 'edge'} on:click={() => Choose(-1, 'edge')}>Restart</button>
+            </div>
+        </div>
+    </div>
     <button type="button" class="ctl_btn play_btn" aria-label={mix.playing ? 'Pause' : 'Play'} on:click={() => dispatch('toggle')}>
         <svg class="icon play_icon" class:is_playing={mix.playing} viewBox="0 0 24 24" aria-hidden="true">
             <path class="half left" d="M6 4L12 7.5L12 16.5L6 20Z" />
             <path class="half right" d="M12 7.5L19 12L19 12L12 16.5Z" />
         </svg>
     </button>
-    <button type="button" class="ctl_btn" aria-label="Forward 10 seconds" on:click={() => SeekBy(10)}>
-        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-            {#key seek_pulse.n}
-                <g class="seek_arc" class:spin={seek_pulse.n > 0 && seek_pulse.dir === 1}>
-                    <path d="M12 4.5a7.5 7.5 0 1 1-7.5 7.5M12 1.5l3.5 3-3.5 3" />
-                </g>
-            {/key}
-            <text x="12" y="15" text-anchor="middle" class="seek_num">10</text>
-        </svg>
-    </button>
-    <span class="time_label">{FormatTime(current_time)}</span>
+    <div class="skip_wrap">
+        <button type="button" class="ctl_btn" aria-haspopup="true"
+            aria-label={forward_step === 'edge' ? 'Skip to next mix' : `Forward ${forward_step} seconds`} on:click={() => Skip(1, forward_step)}>
+            {#if forward_step === 'edge'}
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M5 5l10 7-10 7z" /></svg>
+            {:else}
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    {#key seek_pulse.n}
+                        <g class="seek_arc" class:spin={seek_pulse.n > 0 && seek_pulse.dir === 1}>
+                            <path d="M12 4.5a7.5 7.5 0 1 1-7.5 7.5M12 1.5l3.5 3-3.5 3" />
+                        </g>
+                    {/key}
+                    <text x="12" y="15" text-anchor="middle" class="seek_num">{forward_step}</text>
+                </svg>
+            {/if}
+        </button>
+        <div class="skip_menu" role="menu" aria-label="Forward options">
+            <div class="skip_menu_inner">
+                {#each STEPS as s}
+                    <button type="button" role="menuitem" class="skip_opt" class:active={forward_step === s} on:click={() => Choose(1, s)}>+{s}s</button>
+                {/each}
+                <button type="button" role="menuitem" class="skip_opt" class:active={forward_step === 'edge'} on:click={() => Choose(1, 'edge')}>Skip</button>
+            </div>
+        </div>
+    </div>
+    <span class="time_label">
+        {FormatTime(current_time)}
+        <span class="mobile_total">{FormatTime(duration)}</span>
+    </span>
     <input type="range" class="seek_bar" aria-label="Seek" min="0" max={duration} step="0.1"
         value={current_time} disabled={!duration} style="--seek-fill:{seek_fill}%"
         on:input={(e) => SeekTo(e.currentTarget.valueAsNumber)}>
@@ -130,6 +190,56 @@
 
         &:hover { background: var(--mix-halo, rgba(218, 213, 234, 0.38)); }
         &:active { transform: scale(0.9); }
+    }
+
+    .skip_wrap {
+        position: relative;
+        flex: 0 0 auto;
+        display: inline-flex;
+    }
+
+    // Drop-up: the menu's bottom padding bridges the gap so hover isn't lost between button and menu
+    .skip_menu {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding-bottom: 0.3rem;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.15s, visibility 0.15s;
+        z-index: 20;
+    }
+
+    .skip_wrap:hover .skip_menu,
+    .skip_wrap:focus-within .skip_menu {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .skip_menu_inner {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        padding: 0.25rem;
+        border: 1px solid var(--mix-edge, rgba(255, 255, 255, 0.3));
+        border-radius: 0.5rem;
+        background: var(--mix-glass-strong, rgba(15, 4, 26, 0.9));
+        backdrop-filter: blur(6px);
+    }
+
+    .skip_opt {
+        padding: 0.3rem 0.6rem;
+        border: 0;
+        border-radius: 0.35rem;
+        color: inherit;
+        background: transparent;
+        font: inherit;
+        white-space: nowrap;
+        cursor: pointer;
+
+        &:hover { background: var(--mix-halo, rgba(218, 213, 234, 0.38)); }
+        &.active { text-decoration: underline; }
     }
 
     .play_btn {
@@ -277,8 +387,19 @@
         outline-offset: 2px;
     }
 
+    .mobile_total { display: none; }
+
     @media (max-width: 600px) {
         .total { display: none; }
+
+        // Stacked like a fraction: current over total
+        .mobile_total {
+            display: block;
+            margin-top: 0.15rem;
+            padding-top: 0.15rem;
+            border-top: 1px solid currentColor;
+            opacity: 0.8;
+        }
 
         .custom_player { gap: 0.2rem; font-size: 0.7rem; }
         .ctl_btn { min-width: 1.9rem; height: 1.9rem; padding: 0 0.2rem; border-radius: 0.4rem; }

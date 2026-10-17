@@ -55,8 +55,12 @@
     }
 
     function formatTime(sec: number): string {
-        const s = sec % 60;
-        return `${Math.floor(sec / 60)}:${s < 10 ? '0' : ''}${s}`;
+        const whole = Math.floor(sec);
+        const hours = Math.floor(whole / 3600);
+        const mins = Math.floor((whole % 3600) / 60);
+        const ss = (whole % 60).toString().padStart(2, '0');
+        if (hours > 0) return `${hours}:${mins.toString().padStart(2, '0')}:${ss}`;
+        return `${mins}:${ss}`;
     }
 
     onMount(() => {
