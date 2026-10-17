@@ -417,7 +417,7 @@
                     {#each tracklists[mix.id - 1]?.tracks ?? [] as track}
                         <li class:now_playing={mix.playing && playing_tracks[mix.id - 1]?.some((t) => t.id === track.id)}>
                             <button class="track_btn" on:click={() => PlayFromTrack(mix, track)}>
-                                [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}]. {track.artist} - {track.title}
+                                [{GetTimeFromSeconds(track.start_time)} - {GetTimeFromSeconds(track.end_time)}] {track.artist} - {track.title}
                             </button>
                         </li>
                     {/each}
