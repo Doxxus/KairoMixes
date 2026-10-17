@@ -1,0 +1,5 @@
+{
+	"buildCommand": "npm run build",
+	"outputDirectory": "build",
+	"rewrites": [{ "source": "/((?!_app/|assets/|Covers/).*)", "destination": "/index.html" }]
+}
