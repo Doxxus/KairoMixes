@@ -36,10 +36,21 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
         run: |
           cd build
-          zip -r ../bundle.zip .
+          zip -r -X ../bundle.zip .
           cd ..
           echo "$COMMIT_SHA" > version.txt
           sha256sum bundle.zip | cut -d' ' -f1 > bundle.sha256
+
+      - name: Sign bundle (ed25519)
+        env:
+          BUNDLE_SIGNING_KEY: ${{ secrets.BUNDLE_SIGNING_KEY }}
+        run: node tools/sign-bundle.mjs sign bundle.zip bundle.sig
+
+      # Recreate the release so published_at moves forward; the app uses it to reject downgrades
+      - name: Delete previous release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release delete latest-bundle --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
 
       # Rolling release: the app always reads the "latest-bundle" tag
       - name: Publish release
@@ -52,5 +63,6 @@ jobs:
           files: |
             bundle.zip
             bundle.sha256
+            bundle.sig
             version.txt
           make_latest: true
