@@ -91,6 +91,14 @@
         else audioplayer.pause();
     }
 
+    function PlayFromStart(mix: Mix) {
+        PauseOthers(mix.id);
+
+        const audioplayer = GetPlayerById(mix.id);
+        audioplayer.currentTime = 0;
+        audioplayer.play();
+    }
+
     function PlayFromTrack(mix: Mix, track: Track) {
         PauseOthers(mix.id);
 
@@ -335,8 +343,9 @@
             handled_play = req.n;
             const mix = mix_data.find((m) => m.id === req.mix_id);
             const track = tracklists[req.mix_id - 1]?.tracks.find((t) => t.id === req.track_id);
-            if (mix && track) {
-                PlayFromTrack(mix, track);
+            if (mix && (track || req.track_id === undefined)) {
+                if (track) PlayFromTrack(mix, track);
+                else PlayFromStart(mix);
                 document.getElementById('b' + mix.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });

@@ -54,6 +54,12 @@
         query = '';
     }
 
+    function playMixFromStart(r: Result) {
+        $play_request = { mix_id: r.mix.id, n: ++search_count };
+        search_open = false;
+        query = '';
+    }
+
     function formatTime(sec: number): string {
         const whole = Math.floor(sec);
         const hours = Math.floor(whole / 3600);
@@ -129,10 +135,14 @@
             {#if search_open && results.length > 0}
                 <ul class="search_results" transition:fly={{ y: -8, duration: 200 }}>
                     {#each results as r (r.mix.id + '-' + r.track.id)}
-                        <li>
+                        <li class="search_result_row">
                             <button class="search_result" on:click={() => pickResult(r)}>
                                 <span class="result_track">{r.track.artist} - {r.track.title}</span>
                                 <span class="result_mix">{r.mix.name} &middot; {formatTime(r.track.start_time)}</span>
+                            </button>
+                            <button class="result_play_mix" title="Play {r.mix.name} from the start"
+                                aria-label="Play {r.mix.name} from the start" on:click={() => playMixFromStart(r)}>
+                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h2v14H6zM19 12L9 5v14z"/></svg>
                             </button>
                         </li>
                     {/each}
