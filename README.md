@@ -31,3 +31,6 @@ npm run preview
 ## Mix data
 
 Mix titles, cover art, and audio URLs are defined in `src/mixes.json`. Timestamped tracklists are defined in `src/tracklists.json`.
+
+## TODO
+[] Add soundcloud linking functionality.
