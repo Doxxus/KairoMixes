@@ -59,7 +59,13 @@
     function HandleTransport(action: string) {
         if (action === 'toggle') TogglePlayPause();
         else if (action === 'next') SwitchToMix(CurrentMixIndex() + 1);
-        else if (action === 'prev') SwitchToMix(CurrentMixIndex() - 1);
+        else if (action === 'prev') {
+            const index = CurrentMixIndex();
+            const player = GetPlayer(index);
+            // Restart the current mix if it's partway through; otherwise go to the previous mix
+            if (player.currentTime > 3) SwitchToMix(index);
+            else SwitchToMix(index - 1);
+        }
     }
 
     $: $is_playing = mix_data.some((mix) => mix.playing);
