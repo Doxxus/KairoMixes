@@ -334,7 +334,10 @@
             if (img.complete && mix_data[i]) ExtractPalette(mix_data[i].id, img);
         });
 
+        RestorePlayback();
         const interval = setInterval(UpdatePlayingTracks, 500);
+        const save_interval = setInterval(SavePlayback, 2000);
+        document.addEventListener('visibilitychange', OnVisibilityChange);
 
         let handled = -1;
         const unsubscribeTransport = transport_command.subscribe((cmd) => {
@@ -370,6 +373,8 @@
 
         return () => {
             clearInterval(interval);
+            clearInterval(save_interval);
+            document.removeEventListener('visibilitychange', OnVisibilityChange);
             unsubscribeTransport();
             unsubscribePlay();
             if ('mediaSession' in navigator) {
@@ -405,11 +410,47 @@
     function OnTrackEnd(trigger_mix: Mix) {
         const index = mix_data.indexOf(trigger_mix);
         const next = $repeat_mix ? index : (index + 1) % mix_data.length;
+        // Rewind the finished mix so it shows 0:00 once the next one starts
+        if (next !== index) GetPlayer(index).currentTime = 0;
         GetPlayer(next).play();
+    }
+
+    // Persisted in localStorage (not cookies): it survives WebView restarts and is never sent to a server.
+    const STORAGE_KEY = 'kairo_playback';
+    let restored = false;
+
+    function SavePlayback() {
+        if (!restored) return;
+        try {
+            const mix = mix_data[CurrentMixIndex()];
+            const time = GetPlayerById(mix.id).currentTime;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ volume: $global_volume, mix_id: mix.id, time }));
+        } catch { /* storage unavailable */ }
+    }
+
+    function RestorePlayback() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
+            if (saved) {
+                if (typeof saved.volume === 'number' && saved.volume >= 0 && saved.volume <= 1) $global_volume = saved.volume;
+                const index = mix_data.findIndex((m) => m.id === saved.mix_id);
+                if (index >= 0 && typeof saved.time === 'number' && saved.time > 0) {
+                    last_mix_index = index;
+                    GetPlayer(index).currentTime = saved.time;
+                }
+            }
+        } catch { /* ignore corrupt data */ }
+        restored = true;
+    }
+
+    $: if (restored) { $global_volume; SavePlayback(); }
+
+    function OnVisibilityChange() {
+        if (document.visibilityState === 'hidden') SavePlayback();
     }
 </script>
 
-<svelte:window on:resize={OnWindowResize} on:keydown|capture={OnVolumeKeydown} />
+<svelte:window on:resize={OnWindowResize} on:keydown|capture={OnVolumeKeydown} on:pagehide={SavePlayback} />
 
 <main class="inner_layout">
     {#each mix_data as mix}
