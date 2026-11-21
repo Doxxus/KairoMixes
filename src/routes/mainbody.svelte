@@ -122,12 +122,23 @@
         // Follow playback: move an open tracklist to the new mix, or open it when auto-open is on
         const changed = trigger_mix.id !== last_started_id;
         last_started_id = trigger_mix.id;
-        if (open_mix_id !== trigger_mix.id && (open_mix_id !== null || (changed && $auto_open_tracklist))) {
-            ToggleTracklist(trigger_mix.id);
-        }
+        const toggled = open_mix_id !== trigger_mix.id && (open_mix_id !== null || (changed && $auto_open_tracklist));
+        if (toggled) ToggleTracklist(trigger_mix.id);
+        CenterMix(trigger_mix.id, toggled ? PANEL_MS + 100 : 0);
 
         document.title = "Kairo Mixes: " + trigger_mix.name;
         UpdatePlayingTracks();
+    }
+
+    let center_timer: ReturnType<typeof setTimeout> | undefined;
+
+    // Centers the whole card (cover plus open tracklist) once panel animations have settled.
+    function CenterMix(mix_id: number, delay: number) {
+        clearTimeout(center_timer);
+        center_timer = setTimeout(() => {
+            document.getElementById('b' + mix_id)?.parentElement
+                ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, delay);
     }
 
     function PauseRequested(trigger_mix: Mix) {
