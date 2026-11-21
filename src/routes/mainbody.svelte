@@ -478,7 +478,7 @@
         <button class="container" id="b{mix.id}"
             style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => TogglePlayMix(mix)}">
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
-            <img class="image" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
+            <img class="image" crossorigin="anonymous" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
                 {#if mix.playing && open_mix_id !== mix.id}
                     <li class="current_track_item" transition:fade>Current Tracks</li>

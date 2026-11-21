@@ -1,5 +1,13 @@
 {
 	"buildCommand": "npm run build",
 	"outputDirectory": "build",
+	"redirects": [
+		{
+			"source": "/:path*",
+			"has": [{ "type": "host", "value": "mixes.doxxus.ca" }],
+			"destination": "https://doxxus.ca/mixes/:path*",
+			"permanent": false
+		}
+	],
 	"rewrites": [{ "source": "/((?!_app/|assets/|Covers/).*)", "destination": "/index.html" }]
 }
