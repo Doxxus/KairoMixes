@@ -2,7 +2,7 @@
 
 Kairo Mixes is a personal website for listening to my Drum & Bass mixes. It provides a dedicated home for full-length mixes, with audio hosted independently rather than limited by the upload restrictions of mainstream music platforms.
 
-Visit the site at [doxxus.ca/mixes](https://doxxus.ca/mixes). It is served under the `/mixes` base path (`kit.paths.base`) by the doxxus.ca home site, which proxies this project's Vercel deployment.
+Visit the site at [doxxus.ca/mixes](https://doxxus.ca/mixes). It is served under the `/mixes` base path (`kit.paths.base`) by the doxxus.ca home site, which proxies this project's Vercel deployment. The Android bundle build (`.github/workflows/publish-bundle.yml`) sets `BUNDLE_BUILD=true` to build with no base path, since the app serves the bundle from its own root.
 
 ## What you can do
 

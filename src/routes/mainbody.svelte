@@ -163,6 +163,14 @@
         return [h, s, l];
     }
 
+    // If the cover host sends no CORS headers, show the image anyway (the palette just falls back to the default)
+    function OnCoverError(event: Event) {
+        const img = event.currentTarget as HTMLImageElement;
+        if (!img.crossOrigin) return;
+        img.removeAttribute('crossorigin');
+        img.src = img.src;
+    }
+
     function OnCoverLoad(mix_id: number, event: Event) {
         ExtractPalette(mix_id, event.currentTarget as HTMLImageElement);
     }
@@ -478,7 +486,7 @@
         <button class="container" id="b{mix.id}"
             style={expanded_mix_id === mix.id && card_size ? `width:${card_size.w}px;height:${card_size.h}px;flex:none` : ''}  on:click="{() => TogglePlayMix(mix)}">
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
-            <img class="image" crossorigin="anonymous" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
+            <img class="image" crossorigin="anonymous" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)} on:error={OnCoverError}>
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
                 {#if mix.playing && open_mix_id !== mix.id}
                     <li class="current_track_item" transition:fade>Current Tracks</li>

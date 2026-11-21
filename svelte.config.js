@@ -10,7 +10,8 @@ const config = {
 
 	kit: {
 		adapter: adapter({ fallback: 'index.html' }),
-		paths: { base: '/mixes' }
+		// The Android bundle is served from the root of its own origin, so its build sets BUNDLE_BUILD
+		paths: { base: process.env.BUNDLE_BUILD ? '' : '/mixes' }
 	}
 };
 
