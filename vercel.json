@@ -3,6 +3,12 @@
 	"outputDirectory": "build",
 	"redirects": [
 		{
+			"source": "/",
+			"has": [{ "type": "host", "value": "mixes.doxxus.ca" }],
+			"destination": "https://doxxus.ca/mixes",
+			"permanent": false
+		},
+		{
 			"source": "/:path*",
 			"has": [{ "type": "host", "value": "mixes.doxxus.ca" }],
 			"destination": "https://doxxus.ca/mixes/:path*",

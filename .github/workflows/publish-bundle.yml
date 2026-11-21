@@ -29,7 +29,10 @@ jobs:
           cache: npm
 
       - run: npm ci --ignore-scripts
+      # The app serves the bundle from the root of its own origin, so no /mixes base path
       - run: npm run build
+        env:
+          BUNDLE_BUILD: 'true'
 
       - name: Package bundle
         env:
