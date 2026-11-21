@@ -1,6 +1,6 @@
 <script lang="ts">
     import '../sass/header.scss';
-    import { repeat_mix, global_volume, is_playing, transport_command, dark_mode, play_request } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, dark_mode, play_request, auto_open_tracklist } from '../objects/stores';
     import type { TransportAction } from '../objects/stores';
     import { onMount, tick } from 'svelte';
     import { fly } from 'svelte/transition';
@@ -71,7 +71,13 @@
 
     onMount(() => {
         $dark_mode = document.documentElement.classList.contains('dark');
+        try { $auto_open_tracklist = localStorage.getItem('auto_open_tracklist') === 'true'; } catch { /* storage unavailable */ }
     });
+
+    function toggleAutoOpen() {
+        $auto_open_tracklist = !$auto_open_tracklist;
+        try { localStorage.setItem('auto_open_tracklist', String($auto_open_tracklist)); } catch { /* storage unavailable */ }
+    }
 
     function toggleDarkMode() {
         $dark_mode = !$dark_mode;
@@ -206,6 +212,15 @@
                 <line class="repeat_slash" x1="3" y1="3" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round" pathLength="1" />
             </svg>
         </button>
+        <button class="transport_button auto_open_toggle" class:repeat_off={!$auto_open_tracklist}
+            title="Auto-open the tracklist of the playing mix" aria-label="Auto-open tracklist of the playing mix"
+            aria-pressed={$auto_open_tracklist} on:click={toggleAutoOpen}>
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5h2v2H4zm4 0h12v2H8zM4 11h2v2H4zm4 0h12v2H8zM4 17h2v2H4zm4 0h12v2H8z"/></svg>
+        </button>
         </div>
     </div>
 </main>
+
+<style lang="scss">
+    .auto_open_toggle.repeat_off { opacity: 0.5; }
+</style>

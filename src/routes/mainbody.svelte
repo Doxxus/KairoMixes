@@ -11,7 +11,7 @@
 
     import TransportControls from './transport_controls.svelte';
 
-    import { repeat_mix, global_volume, is_playing, transport_command, play_request, dark_mode } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, play_request, dark_mode, auto_open_tracklist } from '../objects/stores';
 
     export let mix_data: Mix[];
     export let tracklists: Tracklist[];
@@ -113,9 +113,18 @@
         audioplayer.play();
     }
 
+    let last_started_id: number | null = null;
+
     function PlayRequested(trigger_mix: Mix) {
         trigger_mix.playing = true;
         mix_data = mix_data;
+
+        // Follow playback: move an open tracklist to the new mix, or open it when auto-open is on
+        const changed = trigger_mix.id !== last_started_id;
+        last_started_id = trigger_mix.id;
+        if (open_mix_id !== trigger_mix.id && (open_mix_id !== null || (changed && $auto_open_tracklist))) {
+            ToggleTracklist(trigger_mix.id);
+        }
 
         document.title = "Kairo Mixes: " + trigger_mix.name;
         UpdatePlayingTracks();

@@ -3,6 +3,7 @@ export let repeat_mix = writable(true);
 export let global_volume = writable(1);
 export let is_playing = writable(false);
 export let dark_mode = writable(true);
+export let auto_open_tracklist = writable(false);
 // `n` makes repeated identical requests distinct store values; no `track_id` means play from the start
 export let play_request = writable<{ mix_id: number, track_id?: number, n: number } | null>(null);
 export type TransportAction = 'toggle' | 'next' | 'prev';
