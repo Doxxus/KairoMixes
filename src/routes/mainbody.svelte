@@ -469,7 +469,7 @@
             <div class="title"><h1>{mix.name.toUpperCase()}</h1></div>
             <img class="image" src={mix.cover_path} alt="" on:load={(e) => OnCoverLoad(mix.id, e)}>
             <ul class="playing_track_list" id="playing_tracks{mix.id}" >
-                {#if mix.playing}
+                {#if mix.playing && open_mix_id !== mix.id}
                     <li class="current_track_item" transition:fade>Current Tracks</li>
                     {#each playing_tracks[mix.id - 1] as track (track.id)}
                         <li in:fly={{x: 50}} out:fly={{x: -50}} animate:flip class="playing_track" id="track{track.id}">{track.artist} - {track.title}</li>
