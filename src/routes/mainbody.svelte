@@ -10,8 +10,9 @@
     import type { Track } from '../objects/track';
 
     import TransportControls from './transport_controls.svelte';
+    import Visualizer from './visualizer.svelte';
 
-    import { repeat_mix, global_volume, is_playing, transport_command, play_request, dark_mode, auto_open_tracklist } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, play_request, dark_mode, auto_open_tracklist, show_visualizer } from '../objects/stores';
 
     export let mix_data: Mix[];
     export let tracklists: Tracklist[];
@@ -113,21 +114,54 @@
         audioplayer.play();
     }
 
-    let last_started_id: number | null = null;
+    let audio_context: AudioContext | undefined;
+    let analysers: Record<number, AnalyserNode> = {};
+
+    // Routes a mix's audio through an analyser. Only possible once, and only when the audio is CORS-readable
+    // (otherwise the analyser would read silence), so the visualizer simulates in that case.
+    function EnsureAnalyser(mix_id: number) {
+        try {
+            audio_context ??= new AudioContext();
+            if (audio_context.state === 'suspended') audio_context.resume();
+            if (analysers[mix_id]) return;
+            const audio = GetPlayerById(mix_id);
+            if (!audio.hasAttribute('crossorigin')) return;
+            const analyser = audio_context.createAnalyser();
+            analyser.fftSize = 512;
+            analyser.smoothingTimeConstant = 0.6;
+            audio_context.createMediaElementSource(audio).connect(analyser);
+            analyser.connect(audio_context.destination);
+            analysers[mix_id] = analyser;
+        } catch { /* Web Audio unavailable: visualizer simulates */ }
+    }
 
     function PlayRequested(trigger_mix: Mix) {
+        EnsureAnalyser(trigger_mix.id);
         trigger_mix.playing = true;
         mix_data = mix_data;
 
         // Follow playback: move an open tracklist to the new mix, or open it when auto-open is on
-        const changed = trigger_mix.id !== last_started_id;
-        last_started_id = trigger_mix.id;
-        const toggled = open_mix_id !== trigger_mix.id && (open_mix_id !== null || (changed && $auto_open_tracklist));
+        const toggled = open_mix_id !== trigger_mix.id && (open_mix_id !== null || $auto_open_tracklist);
         if (toggled) ToggleTracklist(trigger_mix.id);
         CenterMix(trigger_mix.id, toggled ? PANEL_MS + 100 : 0);
 
         document.title = "Kairo Mixes: " + trigger_mix.name;
         UpdatePlayingTracks();
+    }
+
+    // Turning auto-open on opens the playing mix's tracklist right away; turning it off closes it
+    let mounted = false;
+    $: if (mounted) SyncAutoOpen($auto_open_tracklist);
+
+    function SyncAutoOpen(enabled: boolean) {
+        const playing = mix_data.find((mix) => mix.playing);
+        if (!playing) return;
+        if (enabled && open_mix_id === null) {
+            ToggleTracklist(playing.id);
+            CenterMix(playing.id, PANEL_MS + 100);
+        } else if (!enabled && open_mix_id === playing.id) {
+            ToggleTracklist(playing.id);
+        }
     }
 
     let center_timer: ReturnType<typeof setTimeout> | undefined;
@@ -358,6 +392,7 @@
     }
 
     onMount(() => {
+        mounted = true;
         document.querySelectorAll<HTMLImageElement>('img.image').forEach((img, i) => {
             if (img.complete && mix_data[i]) ExtractPalette(mix_data[i].id, img);
         });
@@ -496,6 +531,9 @@
                 {/if}
             </ul>          
             <div class="bottom_banner">
+            {#if $show_visualizer}
+                <Visualizer analyser={analysers[mix.id] ?? null} playing={mix.playing} redraw_key={palettes[mix.id] ?? ''} />
+            {/if}
             <TransportControls {mix}
                 on:play={() => PlayRequested(mix)} on:pause={() => PauseRequested(mix)} on:ended={() => OnTrackEnd(mix)}
                 on:toggle={() => TogglePlayMix(mix)} on:seek={UpdatePlayingTracks}

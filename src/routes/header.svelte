@@ -1,6 +1,6 @@
 <script lang="ts">
     import '../sass/header.scss';
-    import { repeat_mix, global_volume, is_playing, transport_command, dark_mode, play_request, auto_open_tracklist } from '../objects/stores';
+    import { repeat_mix, global_volume, is_playing, transport_command, dark_mode, play_request, auto_open_tracklist, show_visualizer } from '../objects/stores';
     import type { TransportAction } from '../objects/stores';
     import { onMount, tick } from 'svelte';
     import { fly } from 'svelte/transition';
@@ -72,7 +72,13 @@
     onMount(() => {
         $dark_mode = document.documentElement.classList.contains('dark');
         try { $auto_open_tracklist = localStorage.getItem('auto_open_tracklist') === 'true'; } catch { /* storage unavailable */ }
+        try { $show_visualizer = localStorage.getItem('show_visualizer') !== 'false'; } catch { /* storage unavailable */ }
     });
+
+    function toggleVisualizer() {
+        $show_visualizer = !$show_visualizer;
+        try { localStorage.setItem('show_visualizer', String($show_visualizer)); } catch { /* storage unavailable */ }
+    }
 
     function toggleAutoOpen() {
         $auto_open_tracklist = !$auto_open_tracklist;
@@ -215,12 +221,63 @@
         <button class="transport_button auto_open_toggle" class:repeat_off={!$auto_open_tracklist}
             title="Auto-open the tracklist of the playing mix" aria-label="Auto-open tracklist of the playing mix"
             aria-pressed={$auto_open_tracklist} on:click={toggleAutoOpen}>
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5h2v2H4zm4 0h12v2H8zM4 11h2v2H4zm4 0h12v2H8zM4 17h2v2H4zm4 0h12v2H8z"/></svg>
+            <svg class="anim_icon list_icon" class:is_off={!$auto_open_tracklist} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <g class="row r1"><rect x="4" y="5" width="2" height="2" /><rect x="8" y="5" width="12" height="2" /></g>
+                <g class="row r2"><rect x="4" y="11" width="2" height="2" /><rect x="8" y="11" width="12" height="2" /></g>
+                <g class="row r3"><rect x="4" y="17" width="2" height="2" /><rect x="8" y="17" width="12" height="2" /></g>
+            </svg>
+        </button>
+        <button class="transport_button auto_open_toggle" class:repeat_off={!$show_visualizer}
+            title="Show or hide the audio visualizers" aria-label="Show audio visualizers"
+            aria-pressed={$show_visualizer} on:click={toggleVisualizer}>
+            <svg class="anim_icon viz_icon" class:is_off={!$show_visualizer} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <rect class="bar b1" x="4" y="10" width="3" height="10" rx="1" />
+                <rect class="bar b2" x="9" y="4" width="3" height="16" rx="1" />
+                <rect class="bar b3" x="14" y="12" width="3" height="8" rx="1" />
+                <rect class="bar b4" x="19" y="8" width="3" height="12" rx="1" />
+            </svg>
         </button>
         </div>
     </div>
 </main>
 
 <style lang="scss">
-    .auto_open_toggle.repeat_off { opacity: 0.5; }
+    .auto_open_toggle.repeat_off { opacity: 0.5; transition: opacity 0.3s; }
+    .auto_open_toggle { transition: opacity 0.3s; }
+
+    .anim_icon {
+        overflow: visible;
+
+        .slash {
+            stroke-dasharray: 1;
+            stroke-dashoffset: 1;
+            transition: stroke-dashoffset 0.3s ease;
+        }
+
+        &.is_off .slash { stroke-dashoffset: 0; }
+
+        .bar, .row {
+            transform-box: fill-box;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+    }
+
+    .viz_icon {
+        .bar { transform-origin: 50% 100%; }
+        &.is_off .bar { transform: scaleY(0.25); }
+        &.is_off .b2 { transition-delay: 0.04s; }
+        &.is_off .b3 { transition-delay: 0.08s; }
+        &.is_off .b4 { transition-delay: 0.12s; }
+    }
+
+    .list_icon {
+        .row { transform-origin: 0% 50%; }
+        &.is_off .row { transform: scaleX(0.4); }
+        &.is_off .r2 { transition-delay: 0.05s; }
+        &.is_off .r3 { transition-delay: 0.1s; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .anim_icon .slash, .anim_icon .bar, .anim_icon .row, .auto_open_toggle { transition: none; }
+    }
 </style>
