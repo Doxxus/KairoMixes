@@ -70,6 +70,15 @@
         (document.activeElement as HTMLElement | null)?.blur();
     }
 
+    // If the audio host sends no CORS headers, play without crossorigin (the visualizer then falls back to a simulation)
+    function OnAudioError() {
+        if (!audio || !audio.hasAttribute('crossorigin')) return;
+        const resume_at = audio.currentTime;
+        audio.removeAttribute('crossorigin');
+        audio.addEventListener('loadedmetadata', () => { if (audio) audio.currentTime = resume_at; }, { once: true });
+        audio.load();
+    }
+
     function ToggleMute() {
         if (audio) audio.muted = !audio.muted;
     }
@@ -87,8 +96,8 @@
 <!-- Capture, because the player group stops keydown propagation -->
 <svelte:window on:keydown|capture={OnWindowKeydown} />
 
-<audio id={mix.id.toString()} src={mix.audio_file_path} preload="metadata" bind:this={audio}
-    on:play on:pause on:ended
+<audio id={mix.id.toString()} src={mix.audio_file_path} preload="metadata" crossorigin="anonymous" bind:this={audio}
+    on:play on:pause on:ended on:error={OnAudioError}
     on:timeupdate={SyncTime} on:loadedmetadata={SyncTime} on:durationchange={SyncTime}
     on:volumechange={() => muted = audio?.muted ?? false}>
 </audio>
