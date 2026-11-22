@@ -137,9 +137,9 @@
 <style lang="scss">
     .visualizer {
         position: absolute;
-        left: 0.75rem;
+        left: 0;
         bottom: 100%;
-        width: calc(100% - 1.5rem);
+        width: 100%;
         height: 3.2rem;
         pointer-events: none;
     }
